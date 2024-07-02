@@ -48,11 +48,6 @@
       </div>
     </div>
     
-    <!-- Temporary button -->
-    <!--
-    <button @click="changeActivePage('Login')">Simulate Signup</button>
-    -->
-    
   </div>
 </template>
 
@@ -75,10 +70,6 @@ export default {
     this.loadUsers(); // Load users data when the page is loaded
   },
   methods: {
-    changeActivePage(page) {
-      this.$emit('signup-success');
-      this.$emit('change-active-page', page);
-    },
     async loadUsers() {
       try {
         const usersResponse = await axios.get('http://localhost:5235/User'); // Fetch users data
@@ -119,7 +110,9 @@ export default {
         const newUser = { username: this.username, email: this.email, password: this.password };
         await axios.post('http://localhost:5235/User', newUser); // Post new user data
         alert("User created successfully.");
-        this.changeActivePage('Login'); // Change active page to Login
+        
+        // Emit event to notify signup success to the parent component
+        this.$emit('signup-success');
       } catch (error) {
         console.error("Error creating user:", error);
         alert("An error occurred during signup. Please try again.");

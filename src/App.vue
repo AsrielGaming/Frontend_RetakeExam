@@ -12,7 +12,7 @@
     <!-- Pages -->
     <div>
       <LoginPage v-if="activePage === 'Login'" @login-success="handleLoginSuccess" @login-simulated="changeActivePage('Homepage')" />
-      <SignUpPage v-if="activePage === 'Sign Up'" />
+      <SignUpPage v-if="activePage === 'Sign Up'" @signup-success="handleSignupSuccess" />
       <HomePage v-if="activePage === 'Homepage'" />
       <CampingSpotPage v-if="activePage === 'Camping spots'" />
       <AccountPage v-if="activePage === 'Account'" />
@@ -80,11 +80,15 @@ export default {
     },
     
     handleLoginSuccess(userData) {
-          console.log("Received userData:", userData);
-          this.userData = userData;
-          this.userName = userData.username;
-          this.changeActivePage('Homepage');
-        },
-      }
+      console.log("Received userData:", userData);
+      this.userData = userData;
+      this.userName = userData.username;
+      this.changeActivePage('Homepage');
+    },
+    
+    handleSignupSuccess() {
+      this.changeActivePage('Login');
+    }
+  }
 }
 </script>
