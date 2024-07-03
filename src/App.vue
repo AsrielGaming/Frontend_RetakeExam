@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <!-- Navigation -->
-    <nav style="display: flex;">
+    <nav style="display: flex; margin-bottom: 10px;">
       <ul style="display: flex; list-style-type: none; padding: 0; margin: 0;">
         <li v-for="(page, index) in filteredPages" :key="index" @click="changeActivePage(page)" :style="getActiveStyling(page)">
           <span style="margin-right: 10px;">{{ page }}</span>
@@ -15,9 +15,9 @@
       <SignUpPage v-if="activePage === 'Sign Up'" @signup-success="handleSignupSuccess" />
       <HomePage v-if="activePage === 'Homepage'" :user-data="userData"/>
       <CampingSpotPage v-if="activePage === 'Camping spots'" :user-data="userData"/>
-      <AccountPage v-if="activePage === 'Account'" :user-data="userData"/>
-      <ListingPage v-if="activePage === 'Listings'" :user-data="userData"/>
       <BookingPage v-if="activePage === 'Bookings'" :user-data="userData"/>
+      <ListingPage v-if="activePage === 'Listings'" :user-data="userData"/>
+      <AccountPage v-if="activePage === 'Account'" :user-data="userData"/>
     </div>
   </div>
 </template>
@@ -53,9 +53,9 @@ export default {
         "Sign Up",
         "Homepage",
         "Camping spots",
-        "Account",
+        "Bookings",
         "Listings",
-        "Bookings"
+        "Account"
       ]
     }
   },
