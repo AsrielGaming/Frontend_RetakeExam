@@ -13,11 +13,11 @@
     <div>
       <LoginPage v-if="activePage === 'Login'" @login-success="handleLoginSuccess" @login-simulated="changeActivePage('Homepage')" />
       <SignUpPage v-if="activePage === 'Sign Up'" @signup-success="handleSignupSuccess" />
-      <HomePage v-if="activePage === 'Homepage'" />
-      <CampingSpotPage v-if="activePage === 'Camping spots'" />
-      <AccountPage v-if="activePage === 'Account'" />
-      <ListingPage v-if="activePage === 'Listings'" />
-      <BookingPage v-if="activePage === 'Bookings'" />
+      <HomePage v-if="activePage === 'Homepage'" :user-data="userData"/>
+      <CampingSpotPage v-if="activePage === 'Camping spots'" :user-data="userData"/>
+      <AccountPage v-if="activePage === 'Account'" :user-data="userData"/>
+      <ListingPage v-if="activePage === 'Listings'" :user-data="userData"/>
+      <BookingPage v-if="activePage === 'Bookings'" :user-data="userData"/>
     </div>
   </div>
 </template>
