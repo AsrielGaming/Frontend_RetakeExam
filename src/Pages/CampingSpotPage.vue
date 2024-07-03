@@ -10,12 +10,13 @@
 
       <!-- Filter container -->
       <div class="filter-container">
-        <button>All</button>
-        <button>Available</button>
-        <button>Amenities</button>
-        <button>Comment</button>
+        <div class="filter-controls">
+          <button>All</button>
+          <button>Available</button>
+          <button>Comment</button>
+        </div>
 
-        <!-- Rating dropdown -->
+        <!-- Additional dropdowns -->
         <div class="dropdown">
           <select>
             <option value="any">Any Rating</option>
@@ -27,7 +28,6 @@
           </select>
         </div>
         
-        <!-- Size dropdown -->
         <div class="dropdown">
           <select>
             <option value="any">Any Size</option>
@@ -37,7 +37,6 @@
           </select>
         </div>
         
-        <!-- Price dropdown -->
         <div class="dropdown">
           <select>
             <option value="any">Any Price</option>
@@ -45,6 +44,22 @@
             <option value="normal">Normal (51-100 €)</option>
             <option value="luxury">Luxury (> 100 €)</option>
           </select>
+        </div>
+
+        <!-- Amenity dropdown (multi-select) using vue-multiselect -->
+        <div class="dropdown multiselect-dropdown">
+          <multiselect v-model="selectedAmenities"
+                       :options="amenitiesList"
+                       placeholder="Select amenities"
+                       :multiple="true"
+                       :close-on-select="false"
+                       :clear-on-select="false"
+                       :preserve-search="true"
+                       :preselect-first="false">
+            <template slot="selection" slot-scope="{ values, isOpen }">
+              <span class="multiselect__single" v-if="values.length && !isOpen">{{ values.length }} options selected</span>
+            </template>
+          </multiselect>
         </div>
       </div>
       
@@ -63,11 +78,41 @@
 </template>
 
 <script>
+import axios from 'axios';
+import Multiselect from 'vue-multiselect'; // Import vue-multiselect component
+
 export default {
   name: 'CampingSpotPage',
-  // Add component logic here if needed
-}
+  components: {
+    Multiselect // Register Multiselect component
+  },
+  data() {
+    return {
+      amenitiesList: [], // Array to store amenities fetched from API
+      selectedAmenities: [] // Array to store selected amenities for filtering
+    };
+  },
+  mounted() {
+    this.fetchAmenities(); // Fetch amenities when the component is mounted
+  },
+  methods: {
+    async fetchAmenities() {
+      try {
+        // Fetch amenities from your API
+        const response = await axios.get('http://localhost:5235/Amenity');
+        const data = response.data.map(amenity => amenity.name); // Extract amenities names
+        this.amenitiesList = data; // Populate the amenities list
+
+      } catch (error) {
+        console.error('Error fetching amenities:', error);
+      }
+    }
+  }
+};
 </script>
+
+<!-- Add Multiselect CSS. Can be added as a static asset or inside a component. -->
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style scoped>
 /* Styling for main container */
@@ -89,23 +134,44 @@ export default {
 .filter-container {
   display: flex;
   justify-content: center;
+  align-items: center; /* Center items vertically */
   margin-bottom: 10px;
   border: 1px solid #ccc;
   padding: 10px;
+  position: relative; /* Ensure positioned relatively for absolute children */
+}
+
+.filter-controls {
+  display: flex;
+  align-items: center;
+}
+
+.filter-controls > *:not(:last-child) {
+  margin-right: 5px; /* Adjust margin between elements */
 }
 
 .filter-container button {
-  margin-right: 10px;
   text-align: center;
+  margin: 0 5px; /* Adjust margin for spacing between buttons */
 }
 
 /* Styling for dropdown */
 .dropdown {
-  margin-right: 10px;
+  position: relative; /* Ensure positioned relatively for absolute children */
+  margin: 0 5px; /* Adjust margin for spacing between dropdowns */
 }
 
 .dropdown select {
+  width: 200px; /* Adjust as needed */
   padding: 5px;
+}
+
+/* Styling for multiselect dropdown */
+.multiselect-dropdown .multiselect__content-wrapper {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000; /* Ensure it's above other content */
 }
 
 /* Styling for content container */
@@ -127,5 +193,4 @@ export default {
   padding: 10px;
   display: flex;
 }
-
 </style>
