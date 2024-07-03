@@ -9,6 +9,9 @@
       </ul>
     </nav>
 
+    <!-- Logout button -->
+    <button v-if="activePage !== 'Login' && activePage !== 'Sign Up'" @click="logout" style="position: absolute; top: 10px; right: 10px;">Logout</button>
+
     <!-- Pages -->
     <div>
       <LoginPage v-if="activePage === 'Login'" @login-success="handleLoginSuccess" @login-simulated="changeActivePage('Homepage')" />
@@ -80,7 +83,7 @@ export default {
     },
     
     handleLoginSuccess(userData) {
-      console.log("Received userData:", userData);
+      //console.log("Received userData:", userData);
       this.userData = userData;
       this.userName = userData.username;
       this.changeActivePage('Homepage');
@@ -88,6 +91,12 @@ export default {
     
     handleSignupSuccess() {
       this.changeActivePage('Login');
+    },
+
+    logout() {
+      // Clear user data and set active page to Login when logout button is clicked
+      this.userData = null;
+      this.activePage = 'Login';
     }
   }
 }

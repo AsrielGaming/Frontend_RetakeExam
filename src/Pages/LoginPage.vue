@@ -59,7 +59,7 @@ export default {
       // Fetch users data
       axios.get('http://localhost:5235/User')
         .then(response => {
-          console.log("Users data:", response.data); // Log users data to console
+          //console.log("Users data:", response.data); // Log users data to console
           const users = response.data; // Extract users data
               
           // Check if email and password belong to any user
