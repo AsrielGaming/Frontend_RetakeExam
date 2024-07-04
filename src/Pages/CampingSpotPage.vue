@@ -93,12 +93,18 @@
                   <input type="date" v-model="spot.startingDate">
                 </div>
                 <div class="time-inputs">
-                  <label for="start-time">Start Time:</label>
-                  <input type="time" id="start-time" v-model="spot.startTime">
-                  <label for="end-time">End Time:</label>
-                  <input type="time" id="end-time" v-model="spot.endTime">
+                  <div class="time-picker-group">
+                    <label for="start-time">Start Time:</label>
+                    <input type="time" id="start-time" v-model="spot.startTime">
+                  </div>
+                  <div class="time-picker-group">
+                    <label for="end-time">End Time:</label>
+                    <input type="time" id="end-time" v-model="spot.endTime">
+                  </div>
                 </div>
-                <button>Book</button>
+                <div class="book-button-container">
+                  <button>Book</button>
+                </div>
               </div>
 
               <!-- Right side for amenities -->
@@ -315,27 +321,36 @@ export default {
   border-right: 1px solid #ccc;
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Center content horizontally */
 }
 
 .date-picker-section {
   display: flex;
   align-items: center; /* Center content horizontally */
+  margin-bottom: 10px; /* Add margin bottom for spacing */
 }
 
-.date-picker-item,
-.time-inputs {
-  margin-bottom: 10px;
+.date-picker-section label {
+  margin-right: 10px; /* Add margin between label and input */
 }
 
 .time-inputs {
   display: flex;
-  flex-direction: column;
-  align-items: center; /* Center content horizontally */
+  flex-direction: column; /* Display time inputs vertically */
+  margin-bottom: 10px; /* Add margin bottom for spacing */
 }
 
-.time-input label {
-  margin-right: 10px;
+.time-picker-group {
+  display: flex;
+  align-items: center; /* Center content vertically */
+  margin-bottom: 5px; /* Add margin bottom for spacing between groups */
+}
+
+.time-picker-group label {
+  margin-right: 10px; /* Add margin between label and input */
+}
+
+.book-button-container {
+  margin-top: auto; /* Push the button to the bottom */
 }
 
 button {
