@@ -49,7 +49,7 @@
         <!-- Amenity dropdown (multi-select) using vue-multiselect -->
         <div class="dropdown multiselect-dropdown">
           <multiselect v-model="selectedAmenities"
-                       :options="amenitiesList"
+                       :options="amenitiesList.map(amenity => amenity.name)"
                        placeholder="Select amenities"
                        :multiple="true"
                        :close-on-select="false"
@@ -67,8 +67,50 @@
       <div class="content">
         <!-- Campingspots container -->
         <div class="campingspots-container">
-          <!-- Placeholder for camping spots -->
-          <div>
+          <div v-if="isLoading">
+            <p>Loading camping spots...</p>
+          </div>
+          <div v-else-if="campingSpots.length">
+            <div v-for="spot in campingSpots" :key="spot.id" class="camping-spot-container">
+              <!-- Left side for spot details -->
+              <div class="spot-details">
+                <div class="camping-spot">
+                  <h3>{{ spot.spotName }}</h3>
+                  <p>Description: {{ spot.description }}</p>
+                  <p>Size: {{ spot.size }} m²</p>
+                  <p>Price: {{ spot.price }} €</p>
+                  <p>Availability: {{ spot.isAvailable ? 'Available' : 'Not Available' }}</p>
+                  <p>Camping Ground: {{ getCampingGroundName(spot.campingGroundId) }}</p>
+                  <p>Owner: {{ getUserName(spot.userId) }}</p>
+                </div>
+              </div>
+
+              <!-- Middle section for booking -->
+              <div class="booking-section">
+                <h3>Book this spot</h3>
+                <div class="date-picker-section">
+                  <label>Date:</label>
+                  <input type="date" v-model="spot.startingDate">
+                </div>
+                <div class="time-inputs">
+                  <label for="start-time">Start Time:</label>
+                  <input type="time" id="start-time" v-model="spot.startTime">
+                  <label for="end-time">End Time:</label>
+                  <input type="time" id="end-time" v-model="spot.endTime">
+                </div>
+                <button>Book</button>
+              </div>
+
+              <!-- Right side for amenities -->
+              <div class="amenities-section">
+                <h3>Amenities</h3>
+                <ul>
+                  <li v-for="amenity in spot.amenities" :key="amenity.id">{{ amenity }}</li> <!-- Display amenity names -->
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div v-else>
             <p>No available camping spots.</p>
           </div>
         </div>
@@ -89,23 +131,89 @@ export default {
   data() {
     return {
       amenitiesList: [], // Array to store amenities fetched from API
-      selectedAmenities: [] // Array to store selected amenities for filtering
+      selectedAmenities: [], // Array to store selected amenities for filtering
+      campingGrounds: [], // Array to store camping grounds fetched from API
+      campingSpots: [], // Array to store camping spots fetched from API
+      users: [], // Array to store users fetched from API
+      isLoading: true // Loading state
     };
   },
   mounted() {
-    this.fetchAmenities(); // Fetch amenities when the component is mounted
+    this.initializeData(); // Initialize data fetching
   },
   methods: {
+    async initializeData() {
+      try {
+        await this.fetchAmenities(); // Fetch amenities first
+        await Promise.all([this.fetchCampingGrounds(), this.fetchUsers()]); // Fetch camping grounds and users in parallel
+        await this.fetchCampingSpots(); // Fetch camping spots after amenities are fetched
+      } catch (error) {
+        console.error('Error initializing data:', error);
+      } finally {
+        this.isLoading = false; // Set loading to false once data is fetched
+      }
+    },
     async fetchAmenities() {
       try {
         // Fetch amenities from your API
         const response = await axios.get('http://localhost:5235/Amenity');
-        const data = response.data.map(amenity => amenity.name); // Extract amenities names
-        this.amenitiesList = data; // Populate the amenities list
-
+        this.amenitiesList = response.data; // Populate the amenities list
       } catch (error) {
         console.error('Error fetching amenities:', error);
       }
+    },
+    async fetchCampingGrounds() {
+      try {
+        // Fetch camping grounds from your API
+        const response = await axios.get('http://localhost:5235/CampingGround');
+        this.campingGrounds = response.data; // Populate the camping grounds list
+      } catch (error) {
+        console.error('Error fetching camping grounds:', error);
+      }
+    },
+    async fetchCampingSpots() {
+      try {
+        // Fetch camping spots from your API
+        const response = await axios.get('http://localhost:5235/CampingSpot');
+        this.campingSpots = response.data; // Populate the camping spots list
+
+        // Map amenityIds to their corresponding names
+        this.campingSpots.forEach(spot => {
+          if (spot.amenityIds && Array.isArray(spot.amenityIds)) {
+            spot.amenities = spot.amenityIds.map(amenityId => {
+              const amenity = this.amenitiesList.find(a => a.id === amenityId);
+              return amenity ? amenity.name : 'Unknown';
+            });
+          } else {
+            spot.amenities = [];
+          }
+
+          // Find and set the user's name for each camping spot
+          const user = this.users.find(u => u.id === spot.userId);
+          spot.userName = user ? user.name : 'Unknown';
+        });
+      } catch (error) {
+        console.error('Error fetching camping spots:', error);
+      }
+    },
+    async fetchUsers() {
+      try {
+        // Fetch users from your API
+        const response = await axios.get('http://localhost:5235/User');
+        this.users = response.data; // Populate the users list
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    },
+    getCampingGroundName(campingGroundId) {
+      const ground = this.campingGrounds.find(g => g.id === campingGroundId);
+      return ground ? ground.name : 'Unknown';
+    },
+    getUserName(userId) {
+      //console.log('Getting user name for userId:', userId);
+      const user = this.users.find(user => user.id === userId);
+      //console.log('Found user:', user);
+      return user ? user.username : 'Unknown';
     }
   }
 };
@@ -192,5 +300,61 @@ export default {
   margin-bottom: 10px;
   padding: 10px;
   display: flex;
+}
+
+/* Styling for spot details */
+.spot-details {
+  flex: 1;
+}
+
+/* Styling for booking section */
+.booking-section {
+  flex: 1;
+  padding: 10px;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Center content horizontally */
+}
+
+.date-picker-section {
+  display: flex;
+  align-items: center; /* Center content horizontally */
+}
+
+.date-picker-item,
+.time-inputs {
+  margin-bottom: 10px;
+}
+
+.time-inputs {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content horizontally */
+}
+
+.time-input label {
+  margin-right: 10px;
+}
+
+button {
+  margin-top: 10px; /* Add space between time pickers and button */
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* Styling for amenities section */
+.amenities-section {
+  flex: 1;
+  padding-left: 10px;
 }
 </style>
