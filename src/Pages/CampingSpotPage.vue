@@ -76,14 +76,13 @@
               <div class="spot-details">
                 <div class="camping-spot">
                   <h3>{{ spot.spotName }}</h3>
-                  <p>Description: {{ spot.description }}</p>
-                  <!--<p>CampType IDs: {{ spot.campTypes }}</p>-->
-                  <p>CampTypes: {{ getCampTypeNames(spot.campTypes) }}</p> <!-- Display CampType names here -->
-                  <p>Size: {{ spot.size }} m²</p>
-                  <p>Price: {{ spot.price }} €</p>
-                  <p>Availability: {{ spot.isAvailable ? 'Available' : 'Not Available' }}</p>
-                  <p>Camping Ground: {{ getCampingGroundName(spot.campingGroundId) }}</p>
-                  <p>Owner: {{ getUserName(spot.userId) }}</p>
+                  <p><strong>Description:</strong> {{ spot.description }}</p>
+                  <p><strong>CampTypes:</strong> {{ getCampTypeNames(spot.campTypes) }}</p>
+                  <p><strong>Size:</strong> {{ spot.size }} m²</p>
+                  <p><strong>Price:</strong> {{ spot.price }} €</p>
+                  <p><strong>Availability:</strong> {{ spot.isAvailable ? 'Available' : 'Not Available' }}</p>
+                  <p><strong>Camping Ground:</strong> {{ getCampingGroundName(spot.campingGroundId) }}</p>
+                  <p><strong>Owner:</strong> {{ getUserName(spot.userId) }}</p>
                 </div>
               </div>
 
@@ -91,16 +90,16 @@
               <div class="booking-section">
                 <h3>Book this spot</h3>
                 <div class="date-picker-section">
-                  <label>Date:</label>
+                  <label><strong>Date:</strong></label>
                   <input type="date" v-model="spot.startingDate">
                 </div>
                 <div class="time-inputs">
                   <div class="time-picker-group">
-                    <label for="start-time">Start Time:</label>
+                    <label for="start-time"><strong>Start Time:</strong></label>
                     <input type="time" id="start-time" v-model="spot.startTime">
                   </div>
                   <div class="time-picker-group">
-                    <label for="end-time">End Time:</label>
+                    <label for="end-time"><strong>End Time:</strong></label>
                     <input type="time" id="end-time" v-model="spot.endTime">
                   </div>
                 </div>
@@ -112,11 +111,12 @@
               <!-- Right side for amenities -->
               <div class="amenities-section">
                 <h3>Amenities</h3>
-                <ul>
+                <ul v-if="spot.amenities && spot.amenities.length">
                   <li v-for="amenityId in spot.amenities" :key="amenityId">
                     {{ getAmenityName(amenityId) }}
-                  </li> <!-- Display amenity names -->
+                  </li>
                 </ul>
+                <p v-else>No amenities</p>
               </div>
             </div>
           </div>
@@ -213,25 +213,20 @@ export default {
       // Ensure campTypeIds is a plain JavaScript array
       const ids = JSON.parse(JSON.stringify(campTypeIds));
 
-      //console.log('Original campTypeIds:', campTypeIds);
-      //console.log('Plain JavaScript array ids:', ids);
-
       if (!ids || ids.length === 0) {
-        return '';
+        return 'No camp types'; // Default message when no camp types are available
       }
 
       const names = ids.map(id => {
         const campType = this.campTypes.find(type => type.id === id);
-        return campType ? campType.typeName : 'Unknown'; // Ensure to use the correct property for typeName
+        return campType ? campType.typeName : 'Undefinded';
       });
 
-      //console.log('Mapped camp type names:', names.join(', '));
-
-      return names.join(', ');
+      return names.length > 0 ? names.join(', ') : 'Undefined'; // Return default message if names array is empty
     },
     getAmenityName(amenityId) {
       const amenity = this.amenitiesList.find(amenity => amenity.id === amenityId);
-      return amenity ? amenity.name : 'Unknown';
+      return amenity ? amenity.name : 'Undefined';
     },
     getCampingGroundName(campingGroundId) {
       const ground = this.campingGrounds.find(g => g.id === campingGroundId);
