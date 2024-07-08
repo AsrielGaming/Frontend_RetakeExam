@@ -128,78 +128,81 @@
 
 <script>
 import axios from 'axios';
-import Multiselect from 'vue-multiselect'; // Import vue-multiselect component
+import Multiselect from 'vue-multiselect';
 
 export default {
   name: 'CampingSpotPage',
   components: {
-    Multiselect // Register Multiselect component
+    Multiselect
   },
   data() {
     return {
-      amenitiesList: [], // Array to store amenities fetched from API
-      selectedAmenities: [], // Array to store selected amenities for filtering
-      campingGrounds: [], // Array to store camping grounds fetched from API
-      campingSpots: [], // Array to store camping spots fetched from API
-      users: [], // Array to store users fetched from API
-      isLoading: true // Loading state
+      amenitiesList: [],
+      selectedAmenities: [],
+      campingGrounds: [],
+      campingSpots: [],
+      users: [],
+      campTypes: [], // New array to store camp types
+      isLoading: true
     };
   },
   mounted() {
-    this.initializeData(); // Initialize data fetching
+    this.initializeData();
   },
   methods: {
     async initializeData() {
       try {
-        await this.fetchAmenities(); // Fetch amenities first
-        await Promise.all([this.fetchCampingGrounds(), this.fetchUsers()]); // Fetch camping grounds and users in parallel
-        await this.fetchCampingSpots(); // Fetch camping spots after amenities are fetched
+        await Promise.all([
+          this.fetchAmenities(),
+          this.fetchCampingGrounds(),
+          this.fetchUsers(),
+          this.fetchCampingSpots(),
+          this.fetchCampTypes() // Fetch camp types along with other data
+        ]);
       } catch (error) {
         console.error('Error initializing data:', error);
       } finally {
-        this.isLoading = false; // Set loading to false once data is fetched
+        this.isLoading = false;
       }
     },
     async fetchAmenities() {
       try {
-        // Fetch amenities from your API
         const response = await axios.get('http://localhost:5235/Amenity');
-        this.amenitiesList = response.data; // Populate the amenities list
+        this.amenitiesList = response.data;
       } catch (error) {
         console.error('Error fetching amenities:', error);
       }
     },
     async fetchCampingGrounds() {
       try {
-        // Fetch camping grounds from your API
         const response = await axios.get('http://localhost:5235/CampingGround');
-        this.campingGrounds = response.data; // Populate the camping grounds list
+        this.campingGrounds = response.data;
       } catch (error) {
         console.error('Error fetching camping grounds:', error);
       }
     },
     async fetchCampingSpots() {
       try {
-        // Fetch camping spots from your API
         const response = await axios.get('http://localhost:5235/CampingSpot');
-        this.campingSpots = response.data; // Populate the camping spots list
-
-        // Log the amenities list for each camping spot
-        this.campingSpots.forEach(spot => {
-          console.log(`Amenities for ${spot.SpotName}:`, spot.Amenities);
-        });
-
+        this.campingSpots = response.data;
       } catch (error) {
         console.error('Error fetching camping spots:', error);
       }
     },
     async fetchUsers() {
       try {
-        // Fetch users from your API
         const response = await axios.get('http://localhost:5235/User');
-        this.users = response.data; // Populate the users list
+        this.users = response.data;
       } catch (error) {
         console.error('Error fetching users:', error);
+      }
+    },
+    async fetchCampTypes() {
+      try {
+        const response = await axios.get('http://localhost:5235/Camptype');
+        this.campTypes = response.data;
+      } catch (error) {
+        console.error('Error fetching camp types:', error);
       }
     },
     getCampingGroundName(campingGroundId) {
