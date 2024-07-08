@@ -77,6 +77,7 @@
                 <div class="camping-spot">
                   <h3>{{ spot.spotName }}</h3>
                   <p>Description: {{ spot.description }}</p>
+                  <p>CampType: {{ spot.campTypes.join(', ') }}</p> <!-- Display CampTypes here -->
                   <p>Size: {{ spot.size }} m²</p>
                   <p>Price: {{ spot.price }} €</p>
                   <p>Availability: {{ spot.isAvailable ? 'Available' : 'Not Available' }}</p>
@@ -111,7 +112,7 @@
               <div class="amenities-section">
                 <h3>Amenities</h3>
                 <ul>
-                  <li v-for="amenity in spot.amenities" :key="amenity.id">{{ amenity }}</li> <!-- Display amenity names -->
+                  <li v-for="amenity in spot.amenities" :key="amenity">{{ amenity }}</li> <!-- Display amenity names -->
                 </ul>
               </div>
             </div>
@@ -183,21 +184,11 @@ export default {
         const response = await axios.get('http://localhost:5235/CampingSpot');
         this.campingSpots = response.data; // Populate the camping spots list
 
-        // Map amenityIds to their corresponding names
+        // Log the amenities list for each camping spot
         this.campingSpots.forEach(spot => {
-          if (spot.amenityIds && Array.isArray(spot.amenityIds)) {
-            spot.amenities = spot.amenityIds.map(amenityId => {
-              const amenity = this.amenitiesList.find(a => a.id === amenityId);
-              return amenity ? amenity.name : 'Unknown';
-            });
-          } else {
-            spot.amenities = [];
-          }
-
-          // Find and set the user's name for each camping spot
-          const user = this.users.find(u => u.id === spot.userId);
-          spot.userName = user ? user.name : 'Unknown';
+          console.log(`Amenities for ${spot.SpotName}:`, spot.Amenities);
         });
+
       } catch (error) {
         console.error('Error fetching camping spots:', error);
       }
@@ -216,9 +207,7 @@ export default {
       return ground ? ground.name : 'Unknown';
     },
     getUserName(userId) {
-      //console.log('Getting user name for userId:', userId);
       const user = this.users.find(user => user.id === userId);
-      //console.log('Found user:', user);
       return user ? user.username : 'Unknown';
     }
   }
