@@ -77,7 +77,8 @@
                 <div class="camping-spot">
                   <h3>{{ spot.spotName }}</h3>
                   <p>Description: {{ spot.description }}</p>
-                  <p>CampType: {{ spot.campTypes.join(', ') }}</p> <!-- Display CampTypes here -->
+                  <!--<p>CampType IDs: {{ spot.campTypes }}</p>-->
+                  <p>CampTypes: {{ getCampTypeNames(spot.campTypes) }}</p> <!-- Display CampType names here -->
                   <p>Size: {{ spot.size }} m²</p>
                   <p>Price: {{ spot.price }} €</p>
                   <p>Availability: {{ spot.isAvailable ? 'Available' : 'Not Available' }}</p>
@@ -112,7 +113,9 @@
               <div class="amenities-section">
                 <h3>Amenities</h3>
                 <ul>
-                  <li v-for="amenity in spot.amenities" :key="amenity">{{ amenity }}</li> <!-- Display amenity names -->
+                  <li v-for="amenityId in spot.amenities" :key="amenityId">
+                    {{ getAmenityName(amenityId) }}
+                  </li> <!-- Display amenity names -->
                 </ul>
               </div>
             </div>
@@ -142,7 +145,7 @@ export default {
       campingGrounds: [],
       campingSpots: [],
       users: [],
-      campTypes: [], // New array to store camp types
+      campTypes: [], // Array to store camp types fetched from API
       isLoading: true
     };
   },
@@ -157,7 +160,7 @@ export default {
           this.fetchCampingGrounds(),
           this.fetchUsers(),
           this.fetchCampingSpots(),
-          this.fetchCampTypes() // Fetch camp types along with other data
+          this.fetchCampTypes()
         ]);
       } catch (error) {
         console.error('Error initializing data:', error);
@@ -201,9 +204,34 @@ export default {
       try {
         const response = await axios.get('http://localhost:5235/Camptype');
         this.campTypes = response.data;
+        //console.log('Fetched camp types:', this.campTypes); // Log fetched camp types
       } catch (error) {
         console.error('Error fetching camp types:', error);
       }
+    },
+    getCampTypeNames(campTypeIds) {
+      // Ensure campTypeIds is a plain JavaScript array
+      const ids = JSON.parse(JSON.stringify(campTypeIds));
+
+      //console.log('Original campTypeIds:', campTypeIds);
+      //console.log('Plain JavaScript array ids:', ids);
+
+      if (!ids || ids.length === 0) {
+        return '';
+      }
+
+      const names = ids.map(id => {
+        const campType = this.campTypes.find(type => type.id === id);
+        return campType ? campType.typeName : 'Unknown'; // Ensure to use the correct property for typeName
+      });
+
+      //console.log('Mapped camp type names:', names.join(', '));
+
+      return names.join(', ');
+    },
+    getAmenityName(amenityId) {
+      const amenity = this.amenitiesList.find(amenity => amenity.id === amenityId);
+      return amenity ? amenity.name : 'Unknown';
     },
     getCampingGroundName(campingGroundId) {
       const ground = this.campingGrounds.find(g => g.id === campingGroundId);
@@ -217,7 +245,6 @@ export default {
 };
 </script>
 
-<!-- Add Multiselect CSS. Can be added as a static asset or inside a component. -->
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style scoped>
