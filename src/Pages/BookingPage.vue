@@ -15,8 +15,8 @@
           <div v-if="isLoading">
             <p>Loading bookings...</p>
           </div>
-          <div v-else-if="bookingsWithUser.length > 0">
-            <div v-for="booking in bookingsWithUser" :key="booking.id" class="booking-container">
+          <div v-else-if="filteredBookings.length > 0">
+            <div v-for="booking in filteredBookings" :key="booking.id" class="booking-container">
               <!-- Left side for booking details -->
               <div class="booking-details">
                 <h3>Booking: {{ getCampingSpotName(booking.spotId) }}</h3>
@@ -45,6 +45,12 @@ import axios from 'axios';
 
 export default {
   name: 'BookingPage',
+  props: {
+    userData: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
       bookings: [],
@@ -54,12 +60,14 @@ export default {
     };
   },
   computed: {
-    // Filtered bookings array with user details
-    bookingsWithUser() {
-      return this.bookings.map(booking => ({
-        ...booking,
-        username: this.getUserName(booking.userId)
-      }));
+    // Filtered bookings array based on userData.id
+    filteredBookings() {
+      return this.bookings
+        .filter(booking => booking.userId === this.userData.id)
+        .map(booking => ({
+          ...booking,
+          username: this.getUserName(booking.userId)
+        }));
     }
   },
   mounted() {
