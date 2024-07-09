@@ -15,7 +15,7 @@
           <div v-if="isLoading">
             <p>Loading bookings...</p>
           </div>
-          <div v-else-if="bookings.length">
+          <div v-else-if="bookingsWithUser.length > 0">
             <div v-for="booking in bookingsWithUser" :key="booking.id" class="booking-container">
               <!-- Left side for booking details -->
               <div class="booking-details">
