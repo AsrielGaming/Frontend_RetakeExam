@@ -146,6 +146,12 @@ export default {
   components: {
     Multiselect
   },
+  props: {
+    userData: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       amenitiesList: [],
@@ -159,7 +165,7 @@ export default {
       modalMessage: '',
       selectedSpot: null,
       totalPrice: 0,
-      userId: 1 // Assuming userId is 1 for the logged in user; replace with actual user id
+      userId: null  // Initialize userId to null initially
     };
   },
   mounted() {
@@ -175,6 +181,13 @@ export default {
           this.fetchCampingSpots(),
           this.fetchCampTypes()
         ]);
+
+        // Set userId based on userData.id if userData exists and has id
+        if (this.userData && this.userData.id) {
+          this.userId = this.userData.id;
+        } else {
+          console.error('User data or user id not available.');
+        }
       } catch (error) {
         console.error('Error initializing data:', error);
       } finally {
