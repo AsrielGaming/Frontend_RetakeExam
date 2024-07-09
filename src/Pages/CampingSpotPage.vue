@@ -91,14 +91,17 @@
                 <h3>Book this spot</h3>
                 <div class="date-picker-section">
                   <label><strong>Start Date:</strong></label>
-                  <input type="date" v-model="spot.startingDate">
+                  <input type="date" v-model="spot.startingDate" @change="validateDates(spot)">
                 </div>
                 <div class="date-picker-section">
                   <label><strong>End Date:</strong></label>
-                  <input type="date" v-model="spot.endDate">
+                  <input type="date" v-model="spot.endDate" @change="validateDates(spot)">
+                </div>
+                <div v-if="spot.dateError" class="error-message">
+                  <p>{{ spot.dateError }}</p>
                 </div>
                 <div class="book-button-container">
-                  <button>Book</button>
+                  <button :disabled="!spot.startingDate || !spot.endDate || spot.dateError">Book</button>
                 </div>
               </div>
 
@@ -181,7 +184,11 @@ export default {
     async fetchCampingSpots() {
       try {
         const response = await axios.get('http://localhost:5235/CampingSpot');
-        this.campingSpots = response.data;
+        this.campingSpots = response.data.map(spot => ({
+          ...spot,
+          startingDate: '',
+          endDate: ''
+        }));
       } catch (error) {
         console.error('Error fetching camping spots:', error);
       }
@@ -227,6 +234,14 @@ export default {
     getUserName(userId) {
       const user = this.users.find(user => user.id === userId);
       return user ? user.username : 'Unknown';
+    },
+    validateDates(spot) {
+      if (spot.startingDate && spot.endDate) {
+        if (new Date(spot.startingDate) > new Date(spot.endDate)) {
+          alert('End date must be the same or later than start date');
+          spot.endDate = ''; // Clear the end date
+        }
+      }
     }
   }
 };
