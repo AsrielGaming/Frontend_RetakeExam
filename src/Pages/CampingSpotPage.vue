@@ -90,18 +90,12 @@
               <div class="booking-section">
                 <h3>Book this spot</h3>
                 <div class="date-picker-section">
-                  <label><strong>Date:</strong></label>
+                  <label><strong>Start Date:</strong></label>
                   <input type="date" v-model="spot.startingDate">
                 </div>
-                <div class="time-inputs">
-                  <div class="time-picker-group">
-                    <label for="start-time"><strong>Start Time:</strong></label>
-                    <input type="time" id="start-time" v-model="spot.startTime">
-                  </div>
-                  <div class="time-picker-group">
-                    <label for="end-time"><strong>End Time:</strong></label>
-                    <input type="time" id="end-time" v-model="spot.endTime">
-                  </div>
+                <div class="date-picker-section">
+                  <label><strong>End Date:</strong></label>
+                  <input type="date" v-model="spot.endDate">
                 </div>
                 <div class="book-button-container">
                   <button>Book</button>
@@ -145,7 +139,7 @@ export default {
       campingGrounds: [],
       campingSpots: [],
       users: [],
-      campTypes: [], // Array to store camp types fetched from API
+      campTypes: [],
       isLoading: true
     };
   },
@@ -204,25 +198,23 @@ export default {
       try {
         const response = await axios.get('http://localhost:5235/Camptype');
         this.campTypes = response.data;
-        //console.log('Fetched camp types:', this.campTypes); // Log fetched camp types
       } catch (error) {
         console.error('Error fetching camp types:', error);
       }
     },
     getCampTypeNames(campTypeIds) {
-      // Ensure campTypeIds is a plain JavaScript array
       const ids = JSON.parse(JSON.stringify(campTypeIds));
 
       if (!ids || ids.length === 0) {
-        return 'No camp types'; // Default message when no camp types are available
+        return 'No camp types';
       }
 
       const names = ids.map(id => {
         const campType = this.campTypes.find(type => type.id === id);
-        return campType ? campType.typeName : 'Undefinded';
+        return campType ? campType.typeName : 'Undefined';
       });
 
-      return names.length > 0 ? names.join(', ') : 'Undefined'; // Return default message if names array is empty
+      return names.length > 0 ? names.join(', ') : 'Undefined';
     },
     getAmenityName(amenityId) {
       const amenity = this.amenitiesList.find(amenity => amenity.id === amenityId);
@@ -262,11 +254,11 @@ export default {
 .filter-container {
   display: flex;
   justify-content: center;
-  align-items: center; /* Center items vertically */
+  align-items: center;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   padding: 10px;
-  position: relative; /* Ensure positioned relatively for absolute children */
+  position: relative;
 }
 
 .filter-controls {
@@ -275,22 +267,22 @@ export default {
 }
 
 .filter-controls > *:not(:last-child) {
-  margin-right: 5px; /* Adjust margin between elements */
+  margin-right: 5px;
 }
 
 .filter-container button {
   text-align: center;
-  margin: 0 5px; /* Adjust margin for spacing between buttons */
+  margin: 0 5px;
 }
 
 /* Styling for dropdown */
 .dropdown {
-  position: relative; /* Ensure positioned relatively for absolute children */
-  margin: 0 5px; /* Adjust margin for spacing between dropdowns */
+  position: relative;
+  margin: 0 5px;
 }
 
 .dropdown select {
-  width: 200px; /* Adjust as needed */
+  width: 200px;
   padding: 5px;
 }
 
@@ -299,7 +291,7 @@ export default {
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: 1000; /* Ensure it's above other content */
+  z-index: 1000;
 }
 
 /* Styling for content container */
@@ -339,36 +331,20 @@ export default {
 
 .date-picker-section {
   display: flex;
-  align-items: center; /* Center content horizontally */
-  margin-bottom: 10px; /* Add margin bottom for spacing */
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .date-picker-section label {
-  margin-right: 10px; /* Add margin between label and input */
-}
-
-.time-inputs {
-  display: flex;
-  flex-direction: column; /* Display time inputs vertically */
-  margin-bottom: 10px; /* Add margin bottom for spacing */
-}
-
-.time-picker-group {
-  display: flex;
-  align-items: center; /* Center content vertically */
-  margin-bottom: 5px; /* Add margin bottom for spacing between groups */
-}
-
-.time-picker-group label {
-  margin-right: 10px; /* Add margin between label and input */
+  margin-right: 10px;
 }
 
 .book-button-container {
-  margin-top: auto; /* Push the button to the bottom */
+  margin-top: auto;
 }
 
 button {
-  margin-top: 10px; /* Add space between time pickers and button */
+  margin-top: 10px;
   padding: 10px 20px;
   background-color: #4CAF50;
   color: white;
