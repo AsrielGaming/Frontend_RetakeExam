@@ -123,6 +123,17 @@
         </div>
       </div>
     </div>
+
+    <!-- Confirmation Dialog -->
+    <div v-if="showModal" class="confirmation-dialog">
+      <div class="dialog-content">
+        <p>{{ modalMessage }}</p>
+        <div class="dialog-actions">
+          <button @click="closeModal">Cancel</button>
+          <button @click="handleProceed">Proceed</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -143,7 +154,9 @@ export default {
       campingSpots: [],
       users: [],
       campTypes: [],
-      isLoading: true
+      isLoading: true,
+      showModal: false,
+      modalMessage: ''
     };
   },
   mounted() {
@@ -244,20 +257,20 @@ export default {
       }
     },
     calculateAndShowTotalPrice(spot) {
-      if (!spot.startingDate || !spot.endDate) {
-        return; // Dates must be selected
-      }
-
       const startDate = new Date(spot.startingDate);
       const endDate = new Date(spot.endDate);
-
-      // Calculate the number of days
-      const diffTime = endDate - startDate;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include the start date as one full day
-
-      const totalPrice = spot.price * diffDays;
-
-      window.alert(`The total price will be: ${totalPrice} €. Are you sure you want to book this campingspot?`);
+      const timeDiff = endDate.getTime() - startDate.getTime();
+      const dayDiff = timeDiff / (1000 * 3600 * 24) + 1; // Including the start date
+      const totalPrice = spot.price * dayDiff;
+      this.modalMessage = `The total price will be: ${totalPrice} euro. Are you sure you want to book this campingspot?`;
+      this.showModal = true;
+    },
+    closeModal() {
+      this.showModal = false;
+    },
+    handleProceed() {
+      // Functionality for proceed button to be added later
+      this.showModal = false;
     }
   }
 };
@@ -392,5 +405,35 @@ button:hover {
 .amenities-section {
   flex: 1;
   padding-left: 10px;
+}
+
+/* Styling for confirmation dialog */
+.confirmation-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dialog-content {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.dialog-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.dialog-actions button {
+  padding: 10px 20px;
 }
 </style>
