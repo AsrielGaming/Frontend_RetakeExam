@@ -156,7 +156,10 @@ export default {
       campTypes: [],
       isLoading: true,
       showModal: false,
-      modalMessage: ''
+      modalMessage: '',
+      selectedSpot: null,
+      totalPrice: 0,
+      userId: 1 // Assuming userId is 1 for the logged in user; replace with actual user id
     };
   },
   mounted() {
@@ -242,11 +245,11 @@ export default {
     },
     getCampingGroundName(campingGroundId) {
       const ground = this.campingGrounds.find(g => g.id === campingGroundId);
-      return ground ? ground.name : 'Unknown';
+      return ground ? ground.name : 'Undefined';
     },
     getUserName(userId) {
-      const user = this.users.find(user => user.id === userId);
-      return user ? user.username : 'Unknown';
+      const user = this.users.find(u => u.id === userId);
+      return user ? `${user.firstName} ${user.lastName}` : 'Unknown';
     },
     validateDates(spot) {
       if (spot.startingDate && spot.endDate) {
@@ -262,15 +265,35 @@ export default {
       const timeDiff = endDate.getTime() - startDate.getTime();
       const dayDiff = timeDiff / (1000 * 3600 * 24) + 1; // Including the start date
       const totalPrice = spot.price * dayDiff;
-      this.modalMessage = `The total price will be: ${totalPrice} euro. Are you sure you want to book this campingspot?`;
+      this.modalMessage = `The total price will be: ${totalPrice} €. Are you sure you want to book this campingspot?`;
       this.showModal = true;
+      this.selectedSpot = spot;
+      this.totalPrice = totalPrice;
     },
     closeModal() {
       this.showModal = false;
     },
-    handleProceed() {
-      // Functionality for proceed button to be added later
-      this.showModal = false;
+    async handleProceed() {
+      if (!this.selectedSpot) {
+        return;
+      }
+
+      const bookingData = {
+        userId: this.userId,
+        spotId: this.selectedSpot.id,
+        startDate: this.selectedSpot.startingDate,
+        endDate: this.selectedSpot.endDate,
+        totalPrice: this.totalPrice
+      };
+
+      try {
+        await axios.post('http://localhost:5235/Booking', bookingData);
+        alert('Booking successful!');
+        this.showModal = false;
+      } catch (error) {
+        console.error('Error creating booking:', error);
+        alert('An error occurred while creating the booking.');
+      }
     }
   }
 };
