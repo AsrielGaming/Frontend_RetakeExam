@@ -16,14 +16,13 @@
             <p>Loading bookings...</p>
           </div>
           <div v-else-if="bookings.length">
-            <div v-for="booking in bookings" :key="booking.id" class="booking-container">
+            <div v-for="booking in bookingsWithUser" :key="booking.id" class="booking-container">
               <!-- Left side for booking details -->
               <div class="booking-details">
-                <h3>Booking Details</h3>
-                <p><strong>User ID:</strong> {{ booking.userId }}</p>
-                <p><strong>Spot ID:</strong> {{ booking.spotId }}</p>
-                <p><strong>Start Date:</strong> {{ booking.startDate }}</p>
-                <p><strong>End Date:</strong> {{ booking.endDate }}</p>
+                <h3>Booking: {{ getCampingSpotName(booking.spotId) }}</h3>
+                <p><strong>User:</strong> {{ booking.username }}</p>
+                <p><strong>Start Date:</strong> {{ formatDate(booking.startDate) }}</p>
+                <p><strong>End Date:</strong> {{ formatDate(booking.endDate) }}</p>
                 <p><strong>Total Price:</strong> {{ booking.totalPrice }} €</p>
               </div>
               <!-- Right side for future use -->
@@ -53,6 +52,15 @@ export default {
       campingSpots: [],
       isLoading: true
     };
+  },
+  computed: {
+    // Filtered bookings array with user details
+    bookingsWithUser() {
+      return this.bookings.map(booking => ({
+        ...booking,
+        username: this.getUserName(booking.userId)
+      }));
+    }
   },
   mounted() {
     this.initializeData();
@@ -94,6 +102,18 @@ export default {
       } catch (error) {
         console.error('Error fetching camping spots:', error);
       }
+    },
+    formatDate(dateString) {
+      const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+      return new Date(dateString).toLocaleDateString('en-GB', options);
+    },
+    getCampingSpotName(spotId) {
+      const spot = this.campingSpots.find(spot => spot.id === spotId);
+      return spot ? spot.spotName : 'Unknown Camp Name';
+    },
+    getUserName(userId) {
+      const user = this.users.find(user => user.id === userId);
+      return user ? user.username : 'Unknown User';
     }
   }
 };
