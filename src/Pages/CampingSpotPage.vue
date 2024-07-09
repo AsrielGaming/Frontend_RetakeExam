@@ -101,7 +101,7 @@
                   <p>{{ spot.dateError }}</p>
                 </div>
                 <div class="book-button-container">
-                  <button :disabled="!spot.startingDate || !spot.endDate || spot.dateError">Book</button>
+                  <button :disabled="!spot.startingDate || !spot.endDate || spot.dateError" @click="calculateAndShowTotalPrice(spot)">Book</button>
                 </div>
               </div>
 
@@ -242,6 +242,22 @@ export default {
           spot.endDate = ''; // Clear the end date
         }
       }
+    },
+    calculateAndShowTotalPrice(spot) {
+      if (!spot.startingDate || !spot.endDate) {
+        return; // Dates must be selected
+      }
+
+      const startDate = new Date(spot.startingDate);
+      const endDate = new Date(spot.endDate);
+
+      // Calculate the number of days
+      const diffTime = endDate - startDate;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include the start date as one full day
+
+      const totalPrice = spot.price * diffDays;
+
+      window.alert(`The total price will be: ${totalPrice} €. Are you sure you want to book this campingspot?`);
     }
   }
 };
