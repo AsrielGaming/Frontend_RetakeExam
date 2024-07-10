@@ -54,18 +54,26 @@
 
             <div class="field">
               <label for="dropdown3">Amenity:</label>
-              <select id="dropdown3" v-model="newListing.dropdown3" class="boxes">
-                <option disabled value="">Please select one</option>
-                <option v-for="amenity in amenities" :key="amenity" :value="amenity">{{ amenity }}</option>
-              </select>
+              <multiselect v-model="newListing.dropdown3"
+                           :options="amenities"
+                           placeholder="Select amenities"
+                           :multiple="true"
+                           :close-on-select="true"
+                           id="dropdown3"
+                           class="boxes">
+              </multiselect>
             </div>
 
             <div class="field">
               <label for="dropdown4">Camp Type:</label>
-              <select id="dropdown4" v-model="newListing.dropdown4" class="boxes">
-                <option disabled value="">Please select one</option>
-                <option v-for="type in campTypes" :key="type" :value="type">{{ type }}</option>
-              </select>
+              <multiselect v-model="newListing.dropdown4"
+                           :options="campTypes"
+                           placeholder="Select camp types"
+                           :multiple="true"
+                           :close-on-select="true"
+                           id="dropdown4"
+                           class="boxes">
+              </multiselect>
             </div>
 
             <!-- Availability toggle -->
@@ -99,9 +107,13 @@
 
 <script>
 import axios from 'axios';
+import Multiselect from 'vue-multiselect';
 
 export default {
   name: 'ListingPage',
+  components: {
+    Multiselect
+  },
   props: {
     userData: {
       type: Object,
@@ -115,10 +127,10 @@ export default {
         size: null,
         description: '',
         price: null,
-        isAvailable: true, // Set isAvailable to true by default
+        isAvailable: true,
         dropdown2: '', // Will be filled with camping grounds names
-        dropdown3: '', // Will be filled with amenities names
-        dropdown4: ''  // Will be filled with camp types typeNames
+        dropdown3: [], // Use array for multi-select
+        dropdown4: []  // Use array for multi-select
       },
       campingSpots: [],
       campingGrounds: [],
@@ -191,13 +203,15 @@ export default {
         price: null,
         isAvailable: true, // Reset isAvailable to true after submission
         dropdown2: '',
-        dropdown3: '',
-        dropdown4: ''
+        dropdown3: [],
+        dropdown4: []
       };
     }
   }
 };
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style scoped>
 /* Styling for main container */
