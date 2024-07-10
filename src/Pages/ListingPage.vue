@@ -229,7 +229,7 @@ export default {
     });
 
     // Prepare data for POST request
-    const userId = this.userData ? this.userData.id : null; // Assuming userData.id exists
+    const userId = this.userData ? this.userData.id : null;
     const postData = {
       spotName: this.newListing.name,
       size: this.newListing.size,
@@ -248,7 +248,6 @@ export default {
         console.log('New Camping Spot created:', response.data);
         this.successMessage = 'New Camping Spot created successfully!';
         this.errorMessage = '';
-        // Optionally, you can update the UI or perform additional actions upon successful creation
         this.resetForm();
       })
       .catch(error => {
