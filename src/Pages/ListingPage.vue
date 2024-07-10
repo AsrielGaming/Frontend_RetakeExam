@@ -48,7 +48,7 @@
               <label for="dropdown2">Camping Ground: <span class="required-symbol">*</span></label>
               <select id="dropdown2" v-model="newListing.dropdown2" class="boxes" required>
                 <option disabled value="">Please select one</option>
-                <option v-for="ground in campingGrounds" :key="ground" :value="ground">{{ ground }}</option>
+                <option v-for="ground in campingGrounds" :key="ground.id" :value="ground.name">{{ ground.name }}</option>
               </select>
             </div>
 
@@ -88,6 +88,8 @@
         <div class="create-listing-container-bottom">
           <!-- Button -->
           <button @click="createListing">Create Listing</button>
+          <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         </div>
       </div>
 
@@ -136,7 +138,9 @@ export default {
       campingGrounds: [],
       amenities: [],
       campTypes: [],
-      isLoading: true
+      isLoading: true,
+      successMessage: '',
+      errorMessage: ''
     };
   },
   mounted() {
@@ -169,7 +173,7 @@ export default {
       try {
         const response = await axios.get('http://localhost:5235/CampingGround');
         // Extracting names from camping grounds objects
-        this.campingGrounds = response.data.map(campingGround => campingGround.name);
+        this.campingGrounds = response.data;
       } catch (error) {
         console.error('Error fetching camping grounds:', error);
       }
@@ -193,26 +197,78 @@ export default {
       }
     },
     createListing() {
-      // Validate required fields
-      if (!this.newListing.name ||
-          !this.newListing.size ||
-          !this.newListing.description ||
-          !this.newListing.price ||
-          !this.newListing.dropdown2 ||
-          !this.newListing.dropdown4) {
-        alert('Please fill in all required fields.');
-        return;
-      }
+    // Validate required fields
+    if (!this.newListing.name ||
+        !this.newListing.size ||
+        !this.newListing.description ||
+        !this.newListing.price ||
+        !this.newListing.dropdown2) {
+      this.errorMessage = 'Please fill in all required fields.';
+      this.successMessage = '';
+      return;
+    }
 
-      // Handle the submission logic here
-      console.log('New Listing:', this.newListing);
-      // Reset the fields
+    // Find selected camping ground object to get its ID
+    const campingGround = this.campingGrounds.find(ground => ground.name === this.newListing.dropdown2);
+    if (!campingGround) {
+      this.errorMessage = 'Invalid camping ground selected.';
+      this.successMessage = '';
+      return;
+    }
+    const campingGroundId = campingGround.id;
+
+    // Map selected amenities and camp types to their IDs or leave them empty if not selected
+    const amenities = this.newListing.dropdown3.map(amenityName => {
+      const foundAmenity = this.amenities.find(amenity => amenity.name === amenityName);
+      return foundAmenity ? foundAmenity.id : 0; // Use 0 if not found
+    });
+
+    const campTypes = this.newListing.dropdown4.map(campTypeName => {
+      const foundCampType = this.campTypes.find(campType => campType.typeName === campTypeName);
+      return foundCampType ? foundCampType.id : 0; // Use 0 if not found
+    });
+
+    // Prepare data for POST request
+    const userId = this.userData ? this.userData.id : null; // Assuming userData.id exists
+    const postData = {
+      spotName: this.newListing.name,
+      size: this.newListing.size,
+      description: this.newListing.description,
+      price: this.newListing.price,
+      isAvailable: this.newListing.isAvailable,
+      userId: userId,
+      campingGroundId: campingGroundId,
+      amenities: amenities,
+      campTypes: campTypes
+    };
+
+    // POST request to create new camping spot
+    axios.post('http://localhost:5235/CampingSpot', postData)
+      .then(response => {
+        console.log('New Camping Spot created:', response.data);
+        this.successMessage = 'New Camping Spot created successfully!';
+        this.errorMessage = '';
+        // Optionally, you can update the UI or perform additional actions upon successful creation
+        this.resetForm();
+      })
+      .catch(error => {
+        console.error('Error creating new Camping Spot:', error.response);
+        if (error.response && error.response.data && error.response.data.errors) {
+          this.errorMessage = 'Failed to create new Camping Spot. Please check the form and try again.';
+        } else {
+          this.errorMessage = 'Failed to create new Camping Spot. Please try again later.';
+        }
+        this.successMessage = '';
+      });
+  },
+    resetForm() {
+      // Reset the form fields
       this.newListing = {
         name: '',
         size: null,
         description: '',
         price: null,
-        isAvailable: true, // Reset isAvailable to true after submission
+        isAvailable: true,
         dropdown2: '',
         dropdown3: [],
         dropdown4: []
@@ -325,5 +381,16 @@ export default {
 .required-symbol {
   color: red;
   margin-left: 5px;
+}
+
+/* Styling for success and error messages */
+.success-message {
+  color: green;
+  margin-top: 10px;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
 }
 </style>
