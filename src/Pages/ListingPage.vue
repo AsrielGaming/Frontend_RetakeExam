@@ -17,25 +17,25 @@
 
             <!-- Name field -->
             <div class="field">
-              <label for="name">Name:</label>
+              <label for="name">Name: <span class="required-symbol">*</span></label>
               <input type="text" id="name" v-model="newListing.name" class="boxes" required />
             </div>
 
             <!-- Size picker -->
             <div class="field">
-              <label for="size">Size:</label>
+              <label for="size">Size: <span class="required-symbol">*</span></label>
               <input type="number" id="size" v-model.number="newListing.size" class="boxes" required />
             </div>
 
             <!-- Description field -->
             <div class="field">
-              <label for="description">Description:</label>
+              <label for="description">Description: <span class="required-symbol">*</span></label>
               <input type="text" id="description" v-model="newListing.description" class="boxes" required />
             </div>
 
             <!-- Price picker -->
             <div class="field">
-              <label for="price">Price:</label>
+              <label for="price">Price: <span class="required-symbol">*</span></label>
               <input type="number" id="price" v-model.number="newListing.price" class="boxes" required />
             </div>
             
@@ -45,8 +45,8 @@
           <div class="create-listing-container-right">
             <!-- Dropdown boxes -->
             <div class="field">
-              <label for="dropdown2">Camping Ground:</label>
-              <select id="dropdown2" v-model="newListing.dropdown2" class="boxes">
+              <label for="dropdown2">Camping Ground: <span class="required-symbol">*</span></label>
+              <select id="dropdown2" v-model="newListing.dropdown2" class="boxes" required>
                 <option disabled value="">Please select one</option>
                 <option v-for="ground in campingGrounds" :key="ground" :value="ground">{{ ground }}</option>
               </select>
@@ -65,7 +65,7 @@
             </div>
 
             <div class="field">
-              <label for="dropdown4">Camp Type:</label>
+              <label for="dropdown4">Camp Type: <span class="required-symbol">*</span></label>
               <multiselect v-model="newListing.dropdown4"
                            :options="campTypes"
                            placeholder="Select camp types"
@@ -193,6 +193,17 @@ export default {
       }
     },
     createListing() {
+      // Validate required fields
+      if (!this.newListing.name ||
+          !this.newListing.size ||
+          !this.newListing.description ||
+          !this.newListing.price ||
+          !this.newListing.dropdown2 ||
+          !this.newListing.dropdown4) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+
       // Handle the submission logic here
       console.log('New Listing:', this.newListing);
       // Reset the fields
@@ -310,4 +321,9 @@ export default {
   display: flex;
 }
 
+/* Styling for required symbol */
+.required-symbol {
+  color: red;
+  margin-left: 5px;
+}
 </style>
