@@ -25,6 +25,13 @@
 <script>
 export default {
   name: 'ListingPage',
+  props: {
+    // Userdata property
+    userData: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       // Any data specific to Listings can be added here
