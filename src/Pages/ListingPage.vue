@@ -14,50 +14,31 @@
         <div class="create-listing-container-top">
           <!-- Left side -->
           <div class="create-listing-container-left">
-
             <!-- Name field -->
             <div class="field">
               <label for="name">Name:</label>
               <input type="text" id="name" v-model="newListing.name" class="boxes" required />
             </div>
-
             <!-- Size picker -->
             <div class="field">
               <label for="size">Size:</label>
               <input type="number" id="size" v-model.number="newListing.size" class="boxes" required />
             </div>
-
             <!-- Description field -->
             <div class="field">
               <label for="description">Description:</label>
               <input type="text" id="description" v-model="newListing.description" class="boxes" required />
             </div>
-
             <!-- Price picker -->
             <div class="field">
               <label for="price">Price:</label>
               <input type="number" id="price" v-model.number="newListing.price" class="boxes" required />
-            </div>
-
-            <!-- Availability toggle -->
-            <div class="field checkbox-group">
-              <label for="isAvailable">Is Available:</label>
-              <input type="checkbox" id="isAvailable" v-model="newListing.isAvailable" style="align-self: flex-start;" />
             </div>
           </div>
 
           <!-- Right side -->
           <div class="create-listing-container-right">
             <!-- Dropdown boxes -->
-            <div class="field">
-              <label for="dropdown1">Dropdown 1:</label>
-              <select id="dropdown1" v-model="newListing.dropdown1" class="boxes">
-                <option disabled value="">Please select one</option>
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-              </select>
-            </div>
-
             <div class="field">
               <label for="dropdown2">Dropdown 2:</label>
               <select id="dropdown2" v-model="newListing.dropdown2" class="boxes">
@@ -66,7 +47,6 @@
                 <option value="option2">Option 2</option>
               </select>
             </div>
-
             <div class="field">
               <label for="dropdown3">Dropdown 3:</label>
               <select id="dropdown3" v-model="newListing.dropdown3" class="boxes">
@@ -75,7 +55,6 @@
                 <option value="option2">Option 2</option>
               </select>
             </div>
-
             <div class="field">
               <label for="dropdown4">Dropdown 4:</label>
               <select id="dropdown4" v-model="newListing.dropdown4" class="boxes">
@@ -83,6 +62,11 @@
                 <option value="option1">Option 1</option>
                 <option value="option2">Option 2</option>
               </select>
+            </div>
+            <!-- Availability toggle -->
+            <div class="field checkbox-group">
+              <label for="isAvailable">Is Available:</label>
+              <input type="checkbox" id="isAvailable" v-model="newListing.isAvailable" style="align-self: flex-start;" />
             </div>
           </div>
         </div>
@@ -109,10 +93,11 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'ListingPage',
   props: {
-    // Userdata property
     userData: {
       type: Object,
       default: null
@@ -125,15 +110,79 @@ export default {
         size: null,
         description: '',
         price: null,
-        isAvailable: false,
+        isAvailable: true,
         dropdown1: '',
         dropdown2: '',
         dropdown3: '',
         dropdown4: ''
-      }
+      },
+      campingSpots: [],
+      campingGrounds: [],
+      users: [],
+      amenities: [],
+      campTypes: [],
+      isLoading: true
     };
   },
+  mounted() {
+    this.initializeData();
+  },
   methods: {
+    async initializeData() {
+      try {
+        await Promise.all([
+          this.fetchCampingSpots(),
+          this.fetchCampingGrounds(),
+          this.fetchUsers(),
+          this.fetchAmenities(),
+          this.fetchCampTypes()
+        ]);
+      } catch (error) {
+        console.error('Error initializing data:', error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async fetchCampingSpots() {
+      try {
+        const response = await axios.get('http://localhost:5235/CampingSpot');
+        this.campingSpots = response.data;
+      } catch (error) {
+        console.error('Error fetching camping spots:', error);
+      }
+    },
+    async fetchCampingGrounds() {
+      try {
+        const response = await axios.get('http://localhost:5235/CampingGround');
+        this.campingGrounds = response.data;
+      } catch (error) {
+        console.error('Error fetching camping grounds:', error);
+      }
+    },
+    async fetchUsers() {
+      try {
+        const response = await axios.get('http://localhost:5235/User');
+        this.users = response.data;
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    },
+    async fetchAmenities() {
+      try {
+        const response = await axios.get('http://localhost:5235/Amenity');
+        this.amenities = response.data;
+      } catch (error) {
+        console.error('Error fetching amenities:', error);
+      }
+    },
+    async fetchCampTypes() {
+      try {
+        const response = await axios.get('http://localhost:5235/Camptype');
+        this.campTypes = response.data;
+      } catch (error) {
+        console.error('Error fetching camp types:', error);
+      }
+    },
     createListing() {
       // Handle the submission logic here
       console.log('New Listing:', this.newListing);
@@ -143,7 +192,7 @@ export default {
         size: null,
         description: '',
         price: null,
-        isAvailable: false,
+        isAvailable: true,
         dropdown1: '',
         dropdown2: '',
         dropdown3: '',
@@ -201,6 +250,8 @@ export default {
 /* Styling for create listing container right section */
 .create-listing-container-right {
   width: 48%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Styling for field */
