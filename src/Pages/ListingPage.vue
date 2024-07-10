@@ -14,55 +14,60 @@
         <div class="create-listing-container-top">
           <!-- Left side -->
           <div class="create-listing-container-left">
+
             <!-- Name field -->
             <div class="field">
               <label for="name">Name:</label>
               <input type="text" id="name" v-model="newListing.name" class="boxes" required />
             </div>
+
             <!-- Size picker -->
             <div class="field">
               <label for="size">Size:</label>
               <input type="number" id="size" v-model.number="newListing.size" class="boxes" required />
             </div>
+
             <!-- Description field -->
             <div class="field">
               <label for="description">Description:</label>
               <input type="text" id="description" v-model="newListing.description" class="boxes" required />
             </div>
+
             <!-- Price picker -->
             <div class="field">
               <label for="price">Price:</label>
               <input type="number" id="price" v-model.number="newListing.price" class="boxes" required />
             </div>
+            
           </div>
 
           <!-- Right side -->
           <div class="create-listing-container-right">
             <!-- Dropdown boxes -->
             <div class="field">
-              <label for="dropdown2">Dropdown 2:</label>
+              <label for="dropdown2">Camping Ground:</label>
               <select id="dropdown2" v-model="newListing.dropdown2" class="boxes">
                 <option disabled value="">Please select one</option>
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
+                <option v-for="ground in campingGrounds" :key="ground" :value="ground">{{ ground }}</option>
               </select>
             </div>
+
             <div class="field">
-              <label for="dropdown3">Dropdown 3:</label>
+              <label for="dropdown3">Amenity:</label>
               <select id="dropdown3" v-model="newListing.dropdown3" class="boxes">
                 <option disabled value="">Please select one</option>
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
+                <option v-for="amenity in amenities" :key="amenity" :value="amenity">{{ amenity }}</option>
               </select>
             </div>
+
             <div class="field">
-              <label for="dropdown4">Dropdown 4:</label>
+              <label for="dropdown4">Camp Type:</label>
               <select id="dropdown4" v-model="newListing.dropdown4" class="boxes">
                 <option disabled value="">Please select one</option>
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
+                <option v-for="type in campTypes" :key="type" :value="type">{{ type }}</option>
               </select>
             </div>
+
             <!-- Availability toggle -->
             <div class="field checkbox-group">
               <label for="isAvailable">Is Available:</label>
@@ -110,15 +115,13 @@ export default {
         size: null,
         description: '',
         price: null,
-        isAvailable: true,
-        dropdown1: '',
-        dropdown2: '',
-        dropdown3: '',
-        dropdown4: ''
+        isAvailable: true, // Set isAvailable to true by default
+        dropdown2: '', // Will be filled with camping grounds names
+        dropdown3: '', // Will be filled with amenities names
+        dropdown4: ''  // Will be filled with camp types typeNames
       },
       campingSpots: [],
       campingGrounds: [],
-      users: [],
       amenities: [],
       campTypes: [],
       isLoading: true
@@ -133,7 +136,6 @@ export default {
         await Promise.all([
           this.fetchCampingSpots(),
           this.fetchCampingGrounds(),
-          this.fetchUsers(),
           this.fetchAmenities(),
           this.fetchCampTypes()
         ]);
@@ -154,23 +156,17 @@ export default {
     async fetchCampingGrounds() {
       try {
         const response = await axios.get('http://localhost:5235/CampingGround');
-        this.campingGrounds = response.data;
+        // Extracting names from camping grounds objects
+        this.campingGrounds = response.data.map(campingGround => campingGround.name);
       } catch (error) {
         console.error('Error fetching camping grounds:', error);
-      }
-    },
-    async fetchUsers() {
-      try {
-        const response = await axios.get('http://localhost:5235/User');
-        this.users = response.data;
-      } catch (error) {
-        console.error('Error fetching users:', error);
       }
     },
     async fetchAmenities() {
       try {
         const response = await axios.get('http://localhost:5235/Amenity');
-        this.amenities = response.data;
+        // Extracting names from amenities objects
+        this.amenities = response.data.map(amenity => amenity.name);
       } catch (error) {
         console.error('Error fetching amenities:', error);
       }
@@ -178,7 +174,8 @@ export default {
     async fetchCampTypes() {
       try {
         const response = await axios.get('http://localhost:5235/Camptype');
-        this.campTypes = response.data;
+        // Extracting type names from camp types objects
+        this.campTypes = response.data.map(campType => campType.typeName);
       } catch (error) {
         console.error('Error fetching camp types:', error);
       }
@@ -192,8 +189,7 @@ export default {
         size: null,
         description: '',
         price: null,
-        isAvailable: true,
-        dropdown1: '',
+        isAvailable: true, // Reset isAvailable to true after submission
         dropdown2: '',
         dropdown3: '',
         dropdown4: ''
