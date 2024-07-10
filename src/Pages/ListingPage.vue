@@ -2,7 +2,7 @@
   <div>
     <!-- Main container -->
     <div class="main-container">
-      
+
       <!-- Banner container -->
       <div class="banner">
         <h3>All Listings</h3>
@@ -14,31 +14,26 @@
         <div class="create-listing-container-top">
           <!-- Left side -->
           <div class="create-listing-container-left">
-
             <!-- Name field -->
             <div class="field">
               <label for="name">Name: <span class="required-symbol">*</span></label>
               <input type="text" id="name" v-model="newListing.name" class="boxes" required />
             </div>
-
             <!-- Size picker -->
             <div class="field">
               <label for="size">Size: <span class="required-symbol">*</span></label>
               <input type="number" id="size" v-model.number="newListing.size" class="boxes" required />
             </div>
-
             <!-- Description field -->
             <div class="field">
               <label for="description">Description: <span class="required-symbol">*</span></label>
               <input type="text" id="description" v-model="newListing.description" class="boxes" required />
             </div>
-
             <!-- Price picker -->
             <div class="field">
               <label for="price">Price: <span class="required-symbol">*</span></label>
               <input type="number" id="price" v-model.number="newListing.price" class="boxes" required />
             </div>
-            
           </div>
 
           <!-- Right side -->
@@ -98,8 +93,16 @@
         <!-- Listing container -->
         <div class="listing-container">
           <!-- Placeholder for Listings -->
-          <div>
-            <p>No available listings.</p>
+          <div v-for="spot in filteredCampingSpots" :key="spot.id" class="listing-spot-container">
+            <div class="listing-info">
+              <h4>{{ spot.spotName }}</h4>
+              <p>Description: {{ spot.description }}</p>
+              <p>Camp Types: {{ formatCampTypes(spot.campTypes) }}</p>
+              <p>Size: {{ spot.size }} m²</p>
+              <p>Price: {{ spot.price }} €</p>
+              <p>Availability: {{ spot.isAvailable ? 'Available' : 'Not Available' }}</p>
+              <p>Camping Ground: {{ getCampingGroundName(spot.campingGroundId) }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -143,6 +146,13 @@ export default {
       errorMessage: ''
     };
   },
+  computed: {
+    filteredCampingSpots() {
+      // Filter camping spots based on logged-in user's ID
+      const userId = this.userData ? this.userData.id : null;
+      return this.campingSpots.filter(spot => spot.userId === userId);
+    }
+  },
   mounted() {
     this.initializeData();
   },
@@ -172,7 +182,6 @@ export default {
     async fetchCampingGrounds() {
       try {
         const response = await axios.get('http://localhost:5235/CampingGround');
-        // Extracting names from camping grounds objects
         this.campingGrounds = response.data;
       } catch (error) {
         console.error('Error fetching camping grounds:', error);
@@ -190,76 +199,90 @@ export default {
     async fetchCampTypes() {
       try {
         const response = await axios.get('http://localhost:5235/Camptype');
-        // Extracting type names from camp types objects
-        this.campTypes = response.data.map(campType => campType.typeName);
+        // Store campTypes as an array of objects
+        this.campTypes = response.data;
       } catch (error) {
         console.error('Error fetching camp types:', error);
       }
     },
+    formatCampTypes(campTypeIds) {
+      // Map campTypeIds to their names
+      const campTypeNames = campTypeIds.map(id => {
+        const campType = this.campTypes.find(type => type.id === id);
+        return campType ? campType.typeName : '';
+      }).filter(name => name !== ''); // Remove empty strings
+
+      return campTypeNames.length > 0 ? campTypeNames.join(', ') : 'undefined';
+    },
+    getCampingGroundName(campingGroundId) {
+      // Get camping ground name based on ID
+      const campingGround = this.campingGrounds.find(ground => ground.id === campingGroundId);
+      return campingGround ? campingGround.name : '';
+    },
     createListing() {
-    // Validate required fields
-    if (!this.newListing.name ||
-        !this.newListing.size ||
-        !this.newListing.description ||
-        !this.newListing.price ||
-        !this.newListing.dropdown2) {
-      this.errorMessage = 'Please fill in all required fields.';
-      this.successMessage = '';
-      return;
-    }
-
-    // Find selected camping ground object to get its ID
-    const campingGround = this.campingGrounds.find(ground => ground.name === this.newListing.dropdown2);
-    if (!campingGround) {
-      this.errorMessage = 'Invalid camping ground selected.';
-      this.successMessage = '';
-      return;
-    }
-    const campingGroundId = campingGround.id;
-
-    // Map selected amenities and camp types to their IDs or leave them empty if not selected
-    const amenities = this.newListing.dropdown3.map(amenityName => {
-      const foundAmenity = this.amenities.find(amenity => amenity.name === amenityName);
-      return foundAmenity ? foundAmenity.id : 0; // Use 0 if not found
-    });
-
-    const campTypes = this.newListing.dropdown4.map(campTypeName => {
-      const foundCampType = this.campTypes.find(campType => campType.typeName === campTypeName);
-      return foundCampType ? foundCampType.id : 0; // Use 0 if not found
-    });
-
-    // Prepare data for POST request
-    const userId = this.userData ? this.userData.id : null; // Assuming userData.id exists
-    const postData = {
-      spotName: this.newListing.name,
-      size: this.newListing.size,
-      description: this.newListing.description,
-      price: this.newListing.price,
-      isAvailable: this.newListing.isAvailable,
-      userId: userId,
-      campingGroundId: campingGroundId,
-      amenities: amenities,
-      campTypes: campTypes
-    };
-
-    // POST request to create new camping spot
-    axios.post('http://localhost:5235/CampingSpot', postData)
-      .then(response => {
-        console.log('New Camping Spot created:', response.data);
-        this.successMessage = 'New Camping Spot created successfully!';
-        this.errorMessage = '';
-        this.resetForm();
-      })
-      .catch(error => {
-        console.error('Error creating new Camping Spot:', error.response);
-        if (error.response && error.response.data && error.response.data.errors) {
-          this.errorMessage = 'Failed to create new Camping Spot. Please check the form and try again.';
-        } else {
-          this.errorMessage = 'Failed to create new Camping Spot. Please try again later.';
-        }
+      // Validate required fields
+      if (!this.newListing.name ||
+          !this.newListing.size ||
+          !this.newListing.description ||
+          !this.newListing.price ||
+          !this.newListing.dropdown2) {
+        this.errorMessage = 'Please fill in all required fields.';
         this.successMessage = '';
+        return;
+      }
+
+      // Find selected camping ground object to get its ID
+      const campingGround = this.campingGrounds.find(ground => ground.name === this.newListing.dropdown2);
+      if (!campingGround) {
+        this.errorMessage = 'Invalid camping ground selected.';
+        this.successMessage = '';
+        return;
+      }
+      const campingGroundId = campingGround.id;
+
+      // Map selected amenities and camp types to their IDs or leave them empty if not selected
+      const amenities = this.newListing.dropdown3.map(amenityName => {
+        const foundAmenity = this.amenities.find(amenity => amenity.name === amenityName);
+        return foundAmenity ? foundAmenity.id : 0; // Use 0 if not found
       });
-  },
+
+      const campTypes = this.newListing.dropdown4.map(campTypeName => {
+        const foundCampType = this.campTypes.find(campType => campType.typeName === campTypeName);
+        return foundCampType ? foundCampType.id : 0; // Use 0 if not found
+      });
+
+      // Prepare data for POST request
+      const userId = this.userData ? this.userData.id : null; // Assuming userData.id exists
+      const postData = {
+        spotName: this.newListing.name,
+        size: this.newListing.size,
+        description: this.newListing.description,
+        price: this.newListing.price,
+        isAvailable: this.newListing.isAvailable,
+        userId: userId,
+        campingGroundId: campingGroundId,
+        amenities: amenities,
+        campTypes: campTypes
+      };
+
+      // POST request to create new camping spot
+      axios.post('http://localhost:5235/CampingSpot', postData)
+        .then(response => {
+          console.log('New Camping Spot created:', response.data);
+          this.successMessage = 'New Camping Spot created successfully!';
+          this.errorMessage = '';
+          this.resetForm();
+        })
+        .catch(error => {
+          console.error('Error creating new Camping Spot:', error.response);
+          if (error.response && error.response.data && error.response.data.errors) {
+            this.errorMessage = 'Failed to create new Camping Spot. Please check the form and try again.';
+          } else {
+            this.errorMessage = 'Failed to create new Camping Spot. Please try again later.';
+          }
+          this.successMessage = '';
+        });
+    },
     resetForm() {
       // Reset the form fields
       this.newListing = {
@@ -374,6 +397,11 @@ export default {
   margin-bottom: 10px;
   padding: 10px;
   display: flex;
+}
+
+/* Styling for listing information */
+.listing-info {
+  width: 50%; /* Adjust as per your layout */
 }
 
 /* Styling for required symbol */
