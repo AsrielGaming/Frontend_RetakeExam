@@ -229,7 +229,7 @@ export default {
     });
 
     // Prepare data for POST request
-    const userId = this.userData ? this.userData.id : null;
+    const userId = this.userData ? this.userData.id : null; // Assuming userData.id exists
     const postData = {
       spotName: this.newListing.name,
       size: this.newListing.size,
