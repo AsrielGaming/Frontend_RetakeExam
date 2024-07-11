@@ -262,6 +262,10 @@ export default {
       const amenity = this.amenitiesList.find(amenity => amenity.id === amenityId);
       return amenity ? amenity.name : 'Undefined';
     },
+    getAmenityIdByName(name) {
+      const amenity = this.amenitiesList.find(a => a.name === name);
+      return amenity ? amenity.id : null;
+    },
     getCampingGroundName(campingGroundId) {
       const ground = this.campingGrounds.find(g => g.id === campingGroundId);
       return ground ? ground.name : 'Undefined';
@@ -348,6 +352,17 @@ export default {
       } else if (this.selectedPrice === 'luxury') {
         this.filteredCampingSpots = this.campingSpots.filter(spot => spot.price > 100);
       }
+    },
+    filterByAmenities() {
+      if (this.selectedAmenities.length === 0) {
+        this.filteredCampingSpots = this.campingSpots;
+      } else {
+        this.filteredCampingSpots = this.campingSpots.filter(spot =>
+          this.selectedAmenities.every(selectedAmenity =>
+            spot.amenities.includes(this.getAmenityIdByName(selectedAmenity))
+          )
+        );
+      }
     }
   },
   watch: {
@@ -359,6 +374,9 @@ export default {
     },
     selectedPrice() {
       this.filterByPrice();
+    },
+    selectedAmenities() {
+      this.filterByAmenities();
     }
   }
 };
@@ -525,3 +543,4 @@ button:hover {
   padding: 10px 20px;
 }
 </style>
+
