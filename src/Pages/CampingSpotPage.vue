@@ -11,25 +11,25 @@
       <!-- Filter container -->
       <div class="filter-container">
         <div class="filter-controls">
-          <button>All</button>
-          <button>Available</button>
+          <button @click="filterAll">All</button>
+          <button @click="filterAvailable">Available</button>
           <button>Comment</button>
         </div>
 
         <!-- Additional dropdowns -->
         <div class="dropdown">
-          <select>
+          <select @change="filterByRating" v-model="selectedRating">
             <option value="any">Any Rating</option>
-            <option value="1star">1 star rating</option>
-            <option value="2star">2 star rating</option>
-            <option value="3star">3 star rating</option>
-            <option value="4star">4 star rating</option>
-            <option value="5star">5 star rating</option>
+            <option value="1">1 star rating</option>
+            <option value="2">2 star rating</option>
+            <option value="3">3 star rating</option>
+            <option value="4">4 star rating</option>
+            <option value="5">5 star rating</option>
           </select>
         </div>
         
         <div class="dropdown">
-          <select>
+          <select @change="filterBySize" v-model="selectedSize">
             <option value="any">Any Size</option>
             <option value="small">Small (≤ 50 m²)</option>
             <option value="medium">Medium (51-100 m²)</option>
@@ -38,7 +38,7 @@
         </div>
         
         <div class="dropdown">
-          <select>
+          <select @change="filterByPrice" v-model="selectedPrice">
             <option value="any">Any Price</option>
             <option value="cheap">Cheap (≤ 50 €)</option>
             <option value="normal">Normal (51-100 €)</option>
@@ -70,8 +70,8 @@
           <div v-if="isLoading">
             <p>Loading camping spots...</p>
           </div>
-          <div v-else-if="campingSpots.length">
-            <div v-for="spot in campingSpots" :key="spot.id" class="camping-spot-container">
+          <div v-else-if="filteredCampingSpots.length">
+            <div v-for="spot in filteredCampingSpots" :key="spot.id" class="camping-spot-container">
               <!-- Left side for spot details -->
               <div class="spot-details">
                 <div class="camping-spot">
@@ -158,6 +158,7 @@ export default {
       selectedAmenities: [],
       campingGrounds: [],
       campingSpots: [],
+      filteredCampingSpots: [],
       users: [],
       campTypes: [],
       isLoading: true,
@@ -165,7 +166,10 @@ export default {
       modalMessage: '',
       selectedSpot: null,
       totalPrice: 0,
-      userId: null  // Initialize userId to null initially
+      userId: null,  // Initialize userId to null initially
+      selectedRating: 'any',
+      selectedSize: 'any',
+      selectedPrice: 'any'
     };
   },
   mounted() {
@@ -188,6 +192,8 @@ export default {
         } else {
           console.error('User data or user id not available.');
         }
+
+        this.filteredCampingSpots = this.campingSpots;
       } catch (error) {
         console.error('Error initializing data:', error);
       } finally {
@@ -307,6 +313,52 @@ export default {
         console.error('Error creating booking:', error);
         alert('An error occurred while creating the booking.');
       }
+    },
+    filterAll() {
+      this.filteredCampingSpots = this.campingSpots;
+    },
+    filterAvailable() {
+      this.filteredCampingSpots = this.campingSpots.filter(spot => spot.isAvailable);
+    },
+    filterByRating() {
+      if (this.selectedRating === 'any') {
+        this.filteredCampingSpots = this.campingSpots;
+      } else {
+        this.filteredCampingSpots = this.campingSpots.filter(spot => spot.rating === parseInt(this.selectedRating));
+      }
+    },
+    filterBySize() {
+      if (this.selectedSize === 'any') {
+        this.filteredCampingSpots = this.campingSpots;
+      } else if (this.selectedSize === 'small') {
+        this.filteredCampingSpots = this.campingSpots.filter(spot => spot.size <= 50);
+      } else if (this.selectedSize === 'medium') {
+        this.filteredCampingSpots = this.campingSpots.filter(spot => spot.size > 50 && spot.size <= 100);
+      } else if (this.selectedSize === 'large') {
+        this.filteredCampingSpots = this.campingSpots.filter(spot => spot.size > 100);
+      }
+    },
+    filterByPrice() {
+      if (this.selectedPrice === 'any') {
+        this.filteredCampingSpots = this.campingSpots;
+      } else if (this.selectedPrice === 'cheap') {
+        this.filteredCampingSpots = this.campingSpots.filter(spot => spot.price <= 50);
+      } else if (this.selectedPrice === 'normal') {
+        this.filteredCampingSpots = this.campingSpots.filter(spot => spot.price > 50 && spot.price <= 100);
+      } else if (this.selectedPrice === 'luxury') {
+        this.filteredCampingSpots = this.campingSpots.filter(spot => spot.price > 100);
+      }
+    }
+  },
+  watch: {
+    selectedRating() {
+      this.filterByRating();
+    },
+    selectedSize() {
+      this.filterBySize();
+    },
+    selectedPrice() {
+      this.filterByPrice();
     }
   }
 };
