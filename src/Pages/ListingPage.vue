@@ -22,7 +22,7 @@
             <!-- Size picker -->
             <div class="field">
               <label for="size">Size: <span class="required-symbol">*</span></label>
-              <input type="number" id="size" v-model.number="newListing.size" class="boxes" required />
+              <input type="number" id="size" v-model.number="newListing.size" class="boxes" min="1" required />
             </div>
             <!-- Description field -->
             <div class="field">
@@ -32,7 +32,7 @@
             <!-- Price picker -->
             <div class="field">
               <label for="price">Price: <span class="required-symbol">*</span></label>
-              <input type="number" id="price" v-model.number="newListing.price" class="boxes" required />
+              <input type="number" id="price" v-model.number="newListing.price" class="boxes" min="1" required />
             </div>
           </div>
 
@@ -227,6 +227,18 @@ export default {
           !this.newListing.price ||
           !this.newListing.dropdown2) {
         this.errorMessage = 'Please fill in all required fields.';
+        this.successMessage = '';
+        return;
+      }
+
+      // Validate size and price
+      if (this.newListing.size <= 0) {
+        this.errorMessage = 'Size must be greater than 0.';
+        this.successMessage = '';
+        return;
+      }
+      if (this.newListing.price <= 0) {
+        this.errorMessage = 'Price must be greater than 0.';
         this.successMessage = '';
         return;
       }
