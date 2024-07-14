@@ -272,7 +272,7 @@ export default {
     },
     getUserName(userId) {
       const user = this.users.find(u => u.id === userId);
-      return user ? `${user.firstName} ${user.lastName}` : 'Unknown';
+      return user ? user.username : 'Undefined';
     },
     validateDates(spot) {
       if (spot.startingDate && spot.endDate) {
