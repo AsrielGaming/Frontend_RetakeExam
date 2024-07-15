@@ -14,14 +14,14 @@
         <!-- Username -->
         <div class="section">
           <p style="display:inline-block; margin-right: 10px;">Username:</p>
-          <p>{{ userData.username }}</p>
+          <p>{{ updatedUserData.username || userData.username }}</p>
           <button @click="openPopup('username')">Update</button>
         </div>
 
         <!-- Email -->
         <div class="section">
           <p style="display:inline-block; margin-right: 10px;">Email:</p>
-          <p>{{ userData.email }}</p>
+          <p>{{ updatedUserData.email || userData.email }}</p>
           <button @click="openPopup('email')">Update</button>
         </div>
 
@@ -32,9 +32,9 @@
           <button @click="openPopup('password')">Update</button>
         </div>
 
-        <!-- Button -->
+        <!-- Button to delete account -->
         <div class="section">
-          <button>Delete my account</button>
+          <button @click="deleteAccount">Delete my account</button>
         </div>
 
       </div>
@@ -51,12 +51,28 @@
         </div>
       </div>
     </div>
+
+    <!-- Success or Error Message Popup -->
+    <popup-message v-if="showMessage" :message="messageText" :type="messageType" @close="showMessage = false"></popup-message>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'AccountPage',
+  components: {
+    PopupMessage: {
+      props: ['message', 'type'],
+      template: `
+        <div class="popup-message" :class="type">
+          <p>{{ message }}</p>
+          <button @click="$emit('close')">Close</button>
+        </div>
+      `
+    }
+  },
   props: {
     userData: {
       type: Object,
@@ -67,12 +83,15 @@ export default {
     return {
       showPopup: false,
       popupTitle: '',
-      popupInput: ''
+      popupInput: '',
+      showMessage: false,
+      messageText: '',
+      messageType: '', // success or error
+      updatedUserData: {} // Local data to hold updated user data
     };
   },
   computed: {
     maskedPassword() {
-      // Masks the password except for the first and last characters
       if (this.userData && this.userData.password) {
         const password = this.userData.password;
         const length = password.length;
@@ -98,8 +117,57 @@ export default {
       this.showPopup = false;
       this.popupInput = '';
     },
-    confirmPopup() {
-      // Functionality to be added
+    async confirmPopup() {
+      if (this.popupTitle === 'Change username') {
+        this.updatedUserData.username = this.popupInput;
+      } else if (this.popupTitle === 'Change email') {
+        this.updatedUserData.email = this.popupInput;
+      }
+
+      try {
+        const { id, username, email, password } = Object.assign({}, this.userData, this.updatedUserData);
+        const response = await axios.put(`http://localhost:5235/User/${id}`, {
+          username,
+          email,
+          password
+        });
+        
+        console.log('PUT request successful:', response.data);
+
+        // Log updated user data
+        console.log('Updated User Data:', {
+          id,
+          username,
+          email,
+          password
+        });
+
+        // Show success message
+        this.showMessage = true;
+        this.messageText = `Successfully changed ${this.popupTitle === 'Change username' ? 'username' : (this.popupTitle === 'Change email' ? 'email' : 'password')}`;
+        this.messageType = 'success';
+
+        // Auto close popup
+        setTimeout(() => {
+          this.showPopup = false;
+          this.showMessage = false;
+          this.popupInput = '';
+        }, 100);
+
+      } catch (error) {
+        console.error('Failed to update:', error);
+
+        // Show error message
+        this.showMessage = true;
+        this.messageText = 'Failed to update';
+        this.messageType = 'error';
+      } finally {
+        // Reset updatedUserData
+        this.updatedUserData = {};
+      }
+    },
+    deleteAccount() {
+      // Placeholder for account deletion logic
     }
   }
 }
@@ -171,5 +239,17 @@ button {
   margin-top: 10px;
   display: flex;
   justify-content: space-between;
+}
+
+/* Styling for success message */
+.popup-message.success {
+  background-color: #4CAF50; /* Green */
+  color: white;
+}
+
+/* Styling for error message */
+.popup-message.error {
+  background-color: #f44336; /* Red */
+  color: white;
 }
 </style>
