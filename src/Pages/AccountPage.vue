@@ -44,9 +44,12 @@
     <div v-if="showPopup" class="popup-container">
       <div class="popup">
         <h3>{{ popupTitle }}</h3>
-        <input type="text" v-model="popupInput" placeholder="Enter new value" />
+        <input v-if="popupTitle !== 'Change password'" type="text" v-model="popupInput" placeholder="Enter new value" @input="validateField" />
+        <input v-else type="text" v-model="passwordInput" placeholder="Enter new password" @input="validateField" />
+        <p v-if="popupTitle === 'Change email' && !isValidEmail(popupInput)" class="validation-message">Invalid email format</p>
+        <p v-if="popupTitle === 'Change password' && !isValidPassword(passwordInput)" class="validation-message">Password must contain at least one uppercase letter, one number, and be at least 8 characters long</p>
         <div class="popup-buttons">
-          <button @click="confirmPopup">Confirm</button>
+          <button @click="confirmPopup" :disabled="!isValidInput">Confirm</button>
           <button @click="cancelPopup">Cancel</button>
         </div>
       </div>
@@ -84,10 +87,12 @@ export default {
       showPopup: false,
       popupTitle: '',
       popupInput: '',
+      passwordInput: '',
       showMessage: false,
       messageText: '',
       messageType: '', // success or error
-      updatedUserData: {} // Local data to hold updated user data
+      updatedUserData: {}, // Local data to hold updated user data
+      isValidInput: false // Flag to track if input is valid
     };
   },
   computed: {
@@ -105,6 +110,7 @@ export default {
     openPopup(field) {
       this.showPopup = true;
       this.popupInput = '';
+      this.passwordInput = ''; // Clear password input when opening popup
       if (field === 'username') {
         this.popupTitle = 'Change username';
       } else if (field === 'email') {
@@ -116,12 +122,33 @@ export default {
     cancelPopup() {
       this.showPopup = false;
       this.popupInput = '';
+      this.passwordInput = '';
+      this.isValidInput = false; // Reset validity check
+    },
+    isValidEmail(email) {
+      const re = /\S+@\S+\.\S+/;
+      return re.test(email);
+    },
+    isValidPassword(password) {
+      const re = /^(?=.*[A-Z])(?=.*[0-9]).{8,}$/;
+      return re.test(password);
+    },
+    validateField() {
+      if (this.popupTitle === 'Change email') {
+        this.isValidInput = this.isValidEmail(this.popupInput);
+      } else if (this.popupTitle === 'Change password') {
+        this.isValidInput = this.isValidPassword(this.passwordInput);
+      } else {
+        this.isValidInput = !!this.popupInput.trim(); // For username or any other input
+      }
     },
     async confirmPopup() {
       if (this.popupTitle === 'Change username') {
         this.updatedUserData.username = this.popupInput;
       } else if (this.popupTitle === 'Change email') {
         this.updatedUserData.email = this.popupInput;
+      } else if (this.popupTitle === 'Change password') {
+        this.updatedUserData.password = this.passwordInput;
       }
 
       try {
@@ -152,6 +179,8 @@ export default {
           this.showPopup = false;
           this.showMessage = false;
           this.popupInput = '';
+          this.passwordInput = '';
+          this.isValidInput = false; // Reset validity check
         }, 100);
 
       } catch (error) {
@@ -203,7 +232,8 @@ export default {
 }
 
 /* Styling for textbox */
-input[type="text"] {
+input[type="text"],
+input[type="password"] {
   width: 200px;
   margin-right: 10px;
 }
@@ -239,6 +269,13 @@ button {
   margin-top: 10px;
   display: flex;
   justify-content: space-between;
+}
+
+/* Styling for validation messages */
+.validation-message {
+  color: red;
+  font-size: 0.8em;
+  margin-top: 5px;
 }
 
 /* Styling for success message */
