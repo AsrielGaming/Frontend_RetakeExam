@@ -145,6 +145,8 @@ export default {
       campingGrounds: [],
       amenities: [],
       campTypes: [],
+      ratings: [],
+      comments: [],
       isLoading: true,
       successMessage: '',
       errorMessage: ''
@@ -167,7 +169,9 @@ export default {
           this.fetchCampingSpots(),
           this.fetchCampingGrounds(),
           this.fetchAmenities(),
-          this.fetchCampTypes()
+          this.fetchCampTypes(),
+          this.fetchRatings(),
+          this.fetchComments()
         ]);
       } catch (error) {
         console.error('Error initializing data:', error);
@@ -207,6 +211,22 @@ export default {
         this.campTypes = response.data;
       } catch (error) {
         console.error('Error fetching camp types:', error);
+      }
+    },
+    async fetchRatings() {
+      try {
+        const response = await axios.get('http://localhost:5235/Rating');
+        this.ratings = response.data;
+      } catch (error) {
+        console.error('Error fetching ratings:', error);
+      }
+    },
+    async fetchComments() {
+      try {
+        const response = await axios.get('http://localhost:5235/Comment');
+        this.comments = response.data;
+      } catch (error) {
+        console.error('Error fetching comments:', error);
       }
     },
     formatCampTypes(campTypeIds) {
