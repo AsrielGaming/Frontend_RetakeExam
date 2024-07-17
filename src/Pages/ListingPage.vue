@@ -117,7 +117,7 @@
                   <h5>Comments:</h5>
                   <div v-for="comment in getComments(spot.id)" :key="comment.id" class="comment">
                     <p>{{ comment.text }}</p>
-                    <small>Posted by: {{ comment.userName }}</small>
+                    <small>Posted by: {{ getCommenterUsername(comment.userId) }}</small>
                   </div>
                 </div>
                 <p v-else>No comments available.</p>
@@ -163,6 +163,7 @@ export default {
       campTypes: [],
       ratings: [],
       comments: [],
+      users: [], // Added users array
       isLoading: true,
       successMessage: '',
       errorMessage: ''
@@ -187,7 +188,8 @@ export default {
           this.fetchAmenities(),
           this.fetchCampTypes(),
           this.fetchRatings(),
-          this.fetchComments()
+          this.fetchComments(),
+          this.fetchUsers() // Fetch users data
         ]);
       } catch (error) {
         console.error('Error initializing data:', error);
@@ -245,6 +247,14 @@ export default {
         console.error('Error fetching comments:', error);
       }
     },
+    async fetchUsers() {
+      try {
+        const response = await axios.get('http://localhost:5235/User');
+        this.users = response.data;
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    },
     formatCampTypes(campTypeIds) {
       // Map campTypeIds to their names
       const campTypeNames = campTypeIds.map(id => {
@@ -258,6 +268,11 @@ export default {
       // Get camping ground name based on ID
       const campingGround = this.campingGrounds.find(ground => ground.id === campingGroundId);
       return campingGround ? campingGround.name : '';
+    },
+    getCommenterUsername(userId) {
+      // Get username based on userId
+      const user = this.users.find(user => user.id === userId);
+      return user ? user.username : 'Unknown User';
     },
     createListing() {
       // Validate required fields
