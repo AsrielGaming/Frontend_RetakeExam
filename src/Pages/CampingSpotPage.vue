@@ -115,6 +115,12 @@
                 </ul>
                 <p v-else>No amenities</p>
               </div>
+
+              <!-- New section for comments or additional amenities -->
+              <div class="comment-amenity-section">
+                <p>test</p>
+              </div>
+
             </div>
           </div>
           <div v-else>
@@ -466,12 +472,12 @@ export default {
 
 /* Styling for spot details */
 .spot-details {
-  flex: 1;
+  flex: 25%; /* 25% width */
 }
 
 /* Styling for booking section */
 .booking-section {
-  flex: 1;
+  flex: 12.5%; /* 12.5% width */
   padding: 10px;
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
@@ -509,8 +515,15 @@ button:hover {
 
 /* Styling for amenities section */
 .amenities-section {
-  flex: 1;
+  flex: 12.5%; /* 12.5% width */
   padding-left: 10px;
+  border-right: 1px solid #ccc;
+}
+
+/* Styling for comment-amenity-section */
+.comment-amenity-section {
+  flex: 25%; /* 25% width */
+  padding-left: 10px; /* Adjust padding as needed */
 }
 
 /* Styling for confirmation dialog */
@@ -543,4 +556,3 @@ button:hover {
   padding: 10px 20px;
 }
 </style>
-
