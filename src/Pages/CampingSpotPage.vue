@@ -13,7 +13,7 @@
         <div class="filter-controls">
           <button @click="filterAll">All</button>
           <button @click="filterAvailable">Available</button>
-          <button>Comment</button>
+          <button @click="filterByComments">Comment</button>
         </div>
 
         <!-- Additional dropdowns -->
@@ -384,13 +384,6 @@ export default {
     filterAvailable() {
       this.filteredCampingSpots = this.campingSpots.filter(spot => spot.isAvailable);
     },
-    filterByRating() {
-      if (this.selectedRating === 'any') {
-        this.filteredCampingSpots = this.campingSpots;
-      } else {
-        this.filteredCampingSpots = this.campingSpots.filter(spot => spot.rating === parseInt(this.selectedRating));
-      }
-    },
     filterBySize() {
       if (this.selectedSize === 'any') {
         this.filteredCampingSpots = this.campingSpots;
@@ -423,7 +416,26 @@ export default {
           )
         );
       }
-    }
+    },
+     filterByComments() {
+      this.filteredCampingSpots = this.campingSpots.filter(spot => this.getComments(spot.id).length > 0);
+    },
+
+    filterByRating() {
+      if (this.selectedRating === 'any') {
+        this.filteredCampingSpots = this.campingSpots;
+      } else {
+        const ratingFilter = parseInt(this.selectedRating);
+        this.filteredCampingSpots = this.campingSpots.filter(spot => {
+          const averageRating = this.getRating(spot.id);
+          if (averageRating !== undefined) {
+            const floorRating = Math.floor(averageRating); // Get integer part of the rating
+            return floorRating === ratingFilter;
+          }
+          return false;
+        });
+      }
+    },
   },
   watch: {
     selectedRating() {
@@ -437,7 +449,7 @@ export default {
     },
     selectedAmenities() {
       this.filterByAmenities();
-    }
+    },
   }
 };
 </script>
