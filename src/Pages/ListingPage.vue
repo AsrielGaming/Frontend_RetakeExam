@@ -107,8 +107,8 @@
             <div class="listing-container-right">
               <!-- Top part for rating -->
               <div class="listing-container-right-top">
-                <p v-if="getRating(spot.id) !== undefined">Rating: {{ getRating(spot.id) }}</p>
-                <p v-else>Rating: undefined</p>
+                <p v-if="getRating(spot.id) !== undefined">Average Rating: {{ getRating(spot.id) }}</p>
+                <p v-else>Average Rating: undefined</p>
               </div>
 
               <!-- Bottom part for comments -->
@@ -364,8 +364,14 @@ export default {
       };
     },
     getRating(campingSpotId) {
-      const rating = this.ratings.find(rating => rating.campingSpotId === campingSpotId);
-      return rating ? rating.score : undefined;
+      // Get all ratings for a camping spot and compute average
+      const ratings = this.ratings.filter(rating => rating.campingSpotId === campingSpotId);
+      if (ratings.length === 0) {
+        return undefined; // No ratings
+      }
+      const sum = ratings.reduce((total, rating) => total + rating.score, 0);
+      const average = sum / ratings.length;
+      return average.toFixed(1); // Display average with 1 decimal place
     },
     getComments(campingSpotId) {
       return this.comments.filter(comment => comment.campingSpotId === campingSpotId);
