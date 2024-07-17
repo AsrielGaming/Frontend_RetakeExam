@@ -92,9 +92,9 @@
       <div class="content">
         <!-- Listing container -->
         <div class="listing-container">
-          <!-- Placeholder for Listings -->
           <div v-for="spot in filteredCampingSpots" :key="spot.id" class="listing-spot-container">
-            <div class="listing-info">
+            <!-- Left container -->
+            <div class="listing-container-left">
               <h4>{{ spot.spotName }}</h4>
               <p>Description: {{ spot.description }}</p>
               <p>Camp Types: {{ formatCampTypes(spot.campTypes) }}</p>
@@ -102,6 +102,10 @@
               <p>Price: {{ spot.price }} €</p>
               <p>Availability: {{ spot.isAvailable ? 'Available' : 'Not Available' }}</p>
               <p>Camping Ground: {{ getCampingGroundName(spot.campingGroundId) }}</p>
+            </div>
+            <!-- Right container -->
+            <div class="listing-container-right">
+              <p>test</p>
             </div>
           </div>
         </div>
@@ -409,11 +413,17 @@ export default {
   margin-bottom: 10px;
   padding: 10px;
   display: flex;
+  justify-content: space-between;
+}
+
+/* Styling for left and right containers within each listing spot */
+.listing-container-left, .listing-container-right {
+  width: 48%;
 }
 
 /* Styling for listing information */
 .listing-info {
-  width: 50%; /* Adjust as per your layout */
+  width: 100%; /* Adjust as per your layout */
 }
 
 /* Styling for required symbol */
