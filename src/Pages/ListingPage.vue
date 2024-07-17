@@ -105,7 +105,23 @@
             </div>
             <!-- Right container -->
             <div class="listing-container-right">
-              <p>test</p>
+              <!-- Top part for rating -->
+              <div class="listing-container-right-top">
+                <p v-if="getRating(spot.id) !== undefined">Rating: {{ getRating(spot.id) }}</p>
+                <p v-else>Rating: undefined</p>
+              </div>
+
+              <!-- Bottom part for comments -->
+              <div class="listing-container-right-bottom">
+                <div class="comment-container" v-if="getComments(spot.id).length > 0">
+                  <h5>Comments:</h5>
+                  <div v-for="comment in getComments(spot.id)" :key="comment.id" class="comment">
+                    <p>{{ comment.text }}</p>
+                    <small>Posted by: {{ comment.userName }}</small>
+                  </div>
+                </div>
+                <p v-else>No comments available.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -331,6 +347,13 @@ export default {
         dropdown3: [],
         dropdown4: []
       };
+    },
+    getRating(campingSpotId) {
+      const rating = this.ratings.find(rating => rating.campingSpotId === campingSpotId);
+      return rating ? rating.score : undefined;
+    },
+    getComments(campingSpotId) {
+      return this.comments.filter(comment => comment.campingSpotId === campingSpotId);
     }
   }
 };
