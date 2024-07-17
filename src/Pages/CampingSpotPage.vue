@@ -118,7 +118,23 @@
 
               <!-- New section for comments or additional amenities -->
               <div class="comment-amenity-section">
-                <p>test</p>
+                <!-- Top container for rating -->
+                <div class="comment-amenity-section-top">
+                  <p v-if="getRating(spot.id) !== undefined">Average Rating: {{ getRating(spot.id) }}</p>
+                  <p v-else>Average Rating: undefined</p>
+                </div>
+
+                <!-- Bottom container for comments -->
+                <div class="comment-amenity-section-bottom">
+                  <div class="comment-container" v-if="getComments(spot.id).length > 0">
+                    <h5>Comments:</h5>
+                    <div v-for="comment in getComments(spot.id)" :key="comment.id" class="comment">
+                      <p>{{ comment.text }}</p>
+                      <small>Posted by: {{ getCommenterUsername(comment.userId) }}</small>
+                    </div>
+                  </div>
+                  <p v-else>No comments available.</p>
+                </div>
               </div>
 
             </div>
@@ -167,6 +183,8 @@ export default {
       filteredCampingSpots: [],
       users: [],
       campTypes: [],
+      ratings: [],
+      comments: [],
       isLoading: true,
       showModal: false,
       modalMessage: '',
@@ -189,7 +207,9 @@ export default {
           this.fetchCampingGrounds(),
           this.fetchUsers(),
           this.fetchCampingSpots(),
-          this.fetchCampTypes()
+          this.fetchCampTypes(),
+          this.fetchRatings(),
+          this.fetchComments(),
         ]);
 
         // Set userId based on userData.id if userData exists and has id
@@ -250,6 +270,22 @@ export default {
         console.error('Error fetching camp types:', error);
       }
     },
+    async fetchRatings() {
+      try {
+        const response = await axios.get('http://localhost:5235/Rating');
+        this.ratings = response.data;
+      } catch (error) {
+        console.error('Error fetching ratings:', error);
+      }
+    },
+    async fetchComments() {
+      try {
+        const response = await axios.get('http://localhost:5235/Comment');
+        this.comments = response.data;
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      }
+    },
     getCampTypeNames(campTypeIds) {
       const ids = JSON.parse(JSON.stringify(campTypeIds));
 
@@ -279,6 +315,11 @@ export default {
     getUserName(userId) {
       const user = this.users.find(u => u.id === userId);
       return user ? user.username : 'Undefined';
+    },
+    getCommenterUsername(userId) {
+      // Get username based on userId
+      const user = this.users.find(user => user.id === userId);
+      return user ? user.username : 'Unknown User';
     },
     validateDates(spot) {
       if (spot.startingDate && spot.endDate) {
@@ -323,6 +364,19 @@ export default {
         console.error('Error creating booking:', error);
         alert('An error occurred while creating the booking.');
       }
+    },
+    getRating(campingSpotId) {
+      // Get all ratings for a camping spot and compute average
+      const ratings = this.ratings.filter(rating => rating.campingSpotId === campingSpotId);
+      if (ratings.length === 0) {
+        return undefined; // No ratings
+      }
+      const sum = ratings.reduce((total, rating) => total + rating.score, 0);
+      const average = sum / ratings.length;
+      return average.toFixed(1); // Display average with 1 decimal place
+    },
+    getComments(campingSpotId) {
+      return this.comments.filter(comment => comment.campingSpotId === campingSpotId);
     },
     filterAll() {
       this.filteredCampingSpots = this.campingSpots;
