@@ -121,7 +121,13 @@
                 <!-- Top container for rating -->
                 <div class="comment-amenity-section-top">
                   <p v-if="getRating(spot.id) !== undefined">Average Rating: {{ getRating(spot.id) }}</p>
-                  <p v-else>Average Rating: undefined</p>
+                  <div class="rating-system">
+                    <span v-for="star in 5" :key="star" class="star"
+                          :class="{ 'filled': star <= spot.userRating }"
+                          @click="setUserRating(spot, star)">
+                      ★
+                    </span>
+                  </div>
                 </div>
 
                 <!-- Bottom container for comments -->
@@ -436,7 +442,11 @@ export default {
         });
       }
     },
-  },
+    setUserRating(spot, rating) {
+      // Update userRating for the specific spot
+      this.$set(spot, 'userRating', rating);
+    }
+    },
   watch: {
     selectedRating() {
       this.filterByRating();
@@ -620,5 +630,20 @@ button:hover {
 
 .dialog-actions button {
   padding: 10px 20px;
+}
+
+/* Rating system styling */
+.rating-system {
+  display: flex;
+}
+
+.star {
+  cursor: pointer;
+  font-size: 1.5em;
+  color: #ccc;
+}
+
+.star.filled {
+  color: #FFD700;
 }
 </style>
