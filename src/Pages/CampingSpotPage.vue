@@ -122,6 +122,7 @@
                 <div class="comment-amenity-section-top">
                   <p v-if="getRating(spot.id) !== undefined">Average Rating: {{ getRating(spot.id) }}</p>
                   <div class="rating-system">
+                    <span>Your rating:</span>
                     <span v-for="star in 5" :key="star" class="star"
                           :class="{ 'filled': star <= spot.userRating }"
                           @click="setUserRating(spot, star)">
@@ -632,9 +633,20 @@ button:hover {
   padding: 10px 20px;
 }
 
-/* Rating system styling */
+/* Styling for rating system */
 .rating-system {
   display: flex;
+  align-items: center; /* Align items vertically center */
+}
+
+.rating-label {
+  margin-right: 10px; /* Space between label and stars */
+  font-weight: bold;
+  font-size: 1em; /* Ensure label font size matches stars */
+}
+
+.stars {
+  display: flex; /* Ensure stars are displayed in a row */
 }
 
 .star {
@@ -646,4 +658,5 @@ button:hover {
 .star.filled {
   color: #FFD700;
 }
+
 </style>
