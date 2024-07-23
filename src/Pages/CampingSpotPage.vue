@@ -118,36 +118,32 @@
 
               <!-- New section for comments or additional amenities -->
               <div class="comment-amenity-section">
-                <!-- Top container for rating -->
-                <div class="comment-amenity-section-top">
-                  <p v-if="getRating(spot.id) !== undefined">Average Rating: {{ getRating(spot.id) }}</p>
-                  <div class="rating-system">
-                    <span>Your rating:</span>
-                    <span v-for="star in 5" :key="star" class="star"
-                          :class="{ 'filled': star <= spot.userRating }"
-                          @click="setUserRating(spot, star)">
-                      ★
-                    </span>
+                <p v-if="getRating(spot.id) !== undefined">Average Rating: {{ getRating(spot.id) }}</p>
+                <div class="rating-picker">
+                  <label>Your rating:</label>
+                  <select v-model="spot.userRating" @change="setUserRating(spot, spot.userRating)">
+                    <option value="" disabled>Select rating</option>
+                    <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
+                  </select>
+              </div>
+
+              <!-- Textbox for writing a comment -->
+              <div class="comment-input-section">
+                <textarea v-model="newComment[spot.id]" placeholder="Write your comment here..." rows="4"></textarea>
+                <button @click="submitComment(spot.id)">Submit</button>
+              </div>
+
+              <!-- Bottom container for comments -->
+              <div class="comment-amenity-section-bottom">
+                <div class="comment-container" v-if="getComments(spot.id).length > 0">
+                  <h5>Comments:</h5>
+                  <div v-for="comment in getComments(spot.id)" :key="comment.id" class="comment">
+                    <p>{{ comment.text }}</p>
+                    <small>Posted by: {{ getCommenterUsername(comment.userId) }}</small>
                   </div>
                 </div>
-
-                <!-- Textbox for writing a comment -->
-                <div class="comment-input-section">
-                  <textarea v-model="newComment[spot.id]" placeholder="Write your comment here..." rows="4"></textarea>
-                  <button @click="submitComment(spot.id)">Submit</button>
-                </div>
-
-                <!-- Bottom container for comments -->
-                <div class="comment-amenity-section-bottom">
-                  <div class="comment-container" v-if="getComments(spot.id).length > 0">
-                    <h5>Comments:</h5>
-                    <div v-for="comment in getComments(spot.id)" :key="comment.id" class="comment">
-                      <p>{{ comment.text }}</p>
-                      <small>Posted by: {{ getCommenterUsername(comment.userId) }}</small>
-                    </div>
-                  </div>
-                  <p v-else>No comments available.</p>
-                </div>
+                <p v-else>No comments available.</p>
+               </div>
               </div>
 
             </div>
@@ -380,15 +376,15 @@ export default {
       }
     },
     getRating(campingSpotId) {
-      // Get all ratings for a camping spot and compute average
-      const ratings = this.ratings.filter(rating => rating.campingSpotId === campingSpotId);
-      if (ratings.length === 0) {
-        return undefined; // No ratings
-      }
-      const sum = ratings.reduce((total, rating) => total + rating.score, 0);
-      const average = sum / ratings.length;
-      return average.toFixed(1); // Display average with 1 decimal place
-    },
+    // Get all ratings for a camping spot and compute average
+    const ratings = this.ratings.filter(rating => rating.campingSpotId === campingSpotId);
+    if (ratings.length === 0) {
+      return undefined; // No ratings
+    }
+    const sum = ratings.reduce((total, rating) => total + rating.score, 0);
+    const average = sum / ratings.length;
+    return average.toFixed(1); // Display average with 1 decimal place
+  },
     getComments(campingSpotId) {
       return this.comments.filter(comment => comment.campingSpotId === campingSpotId);
     },
@@ -482,7 +478,7 @@ export default {
     },
     setUserRating(spot, rating) {
       // Update userRating for the specific spot
-      this.$set(spot, 'userRating', rating);
+      this.$set(spot, 'userRating', parseInt(rating));
     }
     },
   watch: {
@@ -688,18 +684,18 @@ button:hover {
   font-size: 1em; /* Ensure label font size matches stars */
 }
 
-.stars {
-  display: flex; /* Ensure stars are displayed in a row */
+/* Styling for rating picker */
+.rating-picker {
+  display: flex;
+  align-items: center;
 }
 
-.star {
-  cursor: pointer;
-  font-size: 1.5em;
-  color: #ccc;
+.rating-picker label {
+  margin-right: 10px;
 }
 
-.star.filled {
-  color: #FFD700;
+.rating-picker select {
+  padding: 5px;
 }
 
 /* Styling for comment input section */
