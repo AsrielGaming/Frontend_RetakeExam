@@ -131,6 +131,12 @@
                   </div>
                 </div>
 
+                <!-- Textbox for writing a comment -->
+                <div class="comment-input-section">
+                  <textarea v-model="newComment" placeholder="Write your comment here..." rows="4"></textarea>
+                  <button @click="submitComment">Submit</button>
+                </div>
+
                 <!-- Bottom container for comments -->
                 <div class="comment-amenity-section-bottom">
                   <div class="comment-container" v-if="getComments(spot.id).length > 0">
@@ -200,7 +206,8 @@ export default {
       userId: null,  // Initialize userId to null initially
       selectedRating: 'any',
       selectedSize: 'any',
-      selectedPrice: 'any'
+      selectedPrice: 'any',
+      newComment: ''
     };
   },
   mounted() {
@@ -443,6 +450,10 @@ export default {
         });
       }
     },
+    submitComment() {
+      // Placeholder method for submitting the comment
+      alert('Submit button clicked!');
+    },
     setUserRating(spot, rating) {
       // Update userRating for the specific spot
       this.$set(spot, 'userRating', rating);
@@ -545,6 +556,7 @@ export default {
   margin-bottom: 10px;
   padding: 10px;
   display: flex;
+  max-height: 500px;
 }
 
 /* Styling for spot details */
@@ -603,6 +615,11 @@ button:hover {
   padding-left: 10px; /* Adjust padding as needed */
 }
 
+.comment-container{
+  overflow-y: scroll;
+  max-height: 150px;
+}
+
 /* Styling for confirmation dialog */
 .confirmation-dialog {
   position: fixed;
@@ -657,6 +674,36 @@ button:hover {
 
 .star.filled {
   color: #FFD700;
+}
+
+/* Styling for comment input section */
+.comment-input-section {
+  margin-top: 5px;
+}
+
+.comment-input-section textarea {
+  width: 100%;
+  max-width: 95%;
+  height: 100px; /* Set initial height */
+  max-height: 200px; /* Set maximum height */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: vertical; /* Allow vertical resize */
+}
+
+.comment-input-section button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.comment-input-section button:hover {
+  background-color: #45a049;
 }
 
 </style>
