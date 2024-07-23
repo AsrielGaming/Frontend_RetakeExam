@@ -133,8 +133,8 @@
 
                 <!-- Textbox for writing a comment -->
                 <div class="comment-input-section">
-                  <textarea v-model="newComment" placeholder="Write your comment here..." rows="4"></textarea>
-                  <button @click="submitComment">Submit</button>
+                  <textarea v-model="newComment[spot.id]" placeholder="Write your comment here..." rows="4"></textarea>
+                  <button @click="submitComment(spot.id)">Submit</button>
                 </div>
 
                 <!-- Bottom container for comments -->
@@ -207,7 +207,7 @@ export default {
       selectedRating: 'any',
       selectedSize: 'any',
       selectedPrice: 'any',
-      newComment: ''
+      newComment: {}
     };
   },
   mounted() {
@@ -450,9 +450,35 @@ export default {
         });
       }
     },
-    submitComment() {
-      // Placeholder method for submitting the comment
-      alert('Submit button clicked!');
+    isEmpty(spotId) {
+      if (!this.newComment[spotId]) {
+        alert('Comment cannot be empty.');
+        return true;
+      }
+      return false;
+    },
+    submitComment(spotId) {
+      if (!this.isEmpty(spotId)) {
+        this.postComment(spotId);
+      }
+    },
+    postComment(spotId) {
+      const commentData = {
+        text: this.newComment[spotId],
+        campingSpotId: spotId,
+        userId: this.userId,
+      };
+      // Call API to save the comment
+      axios.post('http://localhost:5235/Comment', commentData)
+        .then(() => {
+          alert('Comment submitted successfully!');
+          this.fetchComments(); // Refresh comments after submission
+          this.newComment[spotId] = ''; // Clear the comment input for the specific spot
+        })
+        .catch(error => {
+          console.error('Error submitting comment:', error);
+          alert('An error occurred while submitting the comment.');
+        });
     },
     setUserRating(spot, rating) {
       // Update userRating for the specific spot
