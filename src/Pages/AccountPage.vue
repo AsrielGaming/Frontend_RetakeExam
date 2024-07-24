@@ -171,9 +171,22 @@ export default {
         console.error('Failed to update:', error);
       }
     },
-    deleteAccount() {
-      // Placeholder for account deletion logic
-    }
+    async deleteAccount() {
+      const confirmed = window.confirm("Are you sure you want to delete your account? This action cannot be reversed!");
+      if (confirmed) {
+        try {
+          const response = await axios.delete(`http://localhost:5235/User/${this.localUserData.id}`);
+          console.log('DELETE request successful:', response.data);
+
+          // Emit event to parent component to handle logout
+          this.$emit('logoutPostDelete');
+
+        } catch (error) {
+          console.error('Error when deleting account:', error);
+          alert('Error when deleting account.');
+        }
+      }
+    } 
   },
   watch: {
     // Watch for changes in the prop and update the local data accordingly

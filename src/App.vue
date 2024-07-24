@@ -20,7 +20,7 @@
       <CampingSpotPage v-if="activePage === 'Camping spots'" :user-data="userData"/>
       <BookingPage v-if="activePage === 'Bookings'" :user-data="userData"/>
       <ListingPage v-if="activePage === 'Listings'" :user-data="userData"/>
-      <AccountPage v-if="activePage === 'Account'" :user-data="userData"/>
+      <AccountPage v-if="activePage === 'Account'" :user-data="userData" @logoutPostDelete="logout"/>
     </div>
   </div>
 </template>
