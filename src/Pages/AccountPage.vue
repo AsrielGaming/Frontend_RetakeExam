@@ -54,9 +54,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Success or Error Message Popup -->
-    <popup-message v-if="showMessage" :message="messageText" :type="messageType" @close="showMessage = false"></popup-message>
   </div>
 </template>
 
@@ -65,17 +62,6 @@ import axios from 'axios';
 
 export default {
   name: 'AccountPage',
-  components: {
-    PopupMessage: {
-      props: ['message', 'type'],
-      template: `
-        <div class="popup-message" :class="type">
-          <p>{{ message }}</p>
-          <button @click="$emit('close')">Close</button>
-        </div>
-      `
-    }
-  },
   props: {
     userData: {
       type: Object,
@@ -88,9 +74,6 @@ export default {
       popupTitle: '',
       popupInput: '',
       passwordInput: '',
-      showMessage: false,
-      messageText: '',
-      messageType: '', // success or error
       updatedUserData: {}, // Local data to hold updated user data
       isValidInput: false // Flag to track if input is valid
     };
@@ -160,24 +143,13 @@ export default {
         });
         
         console.log('PUT request successful:', response.data);
-
-        // Log updated user data
-        console.log('Updated User Data:', {
-          id,
-          username,
-          email,
-          password
-        });
-
-        // Show success message
-        this.showMessage = true;
-        this.messageText = `Successfully changed ${this.popupTitle === 'Change username' ? 'username' : (this.popupTitle === 'Change email' ? 'email' : 'password')}`;
-        this.messageType = 'success';
+        
+        // Show success alert
+        alert('User updated successfully!');
 
         // Auto close popup
         setTimeout(() => {
           this.showPopup = false;
-          this.showMessage = false;
           this.popupInput = '';
           this.passwordInput = '';
           this.isValidInput = false; // Reset validity check
@@ -185,11 +157,6 @@ export default {
 
       } catch (error) {
         console.error('Failed to update:', error);
-
-        // Show error message
-        this.showMessage = true;
-        this.messageText = 'Failed to update';
-        this.messageType = 'error';
       } finally {
         // Reset updatedUserData
         this.updatedUserData = {};
@@ -276,17 +243,5 @@ button {
   color: red;
   font-size: 0.8em;
   margin-top: 5px;
-}
-
-/* Styling for success message */
-.popup-message.success {
-  background-color: #4CAF50; /* Green */
-  color: white;
-}
-
-/* Styling for error message */
-.popup-message.error {
-  background-color: #f44336; /* Red */
-  color: white;
 }
 </style>
