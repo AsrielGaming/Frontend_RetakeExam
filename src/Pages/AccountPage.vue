@@ -5,7 +5,7 @@
       
       <!-- Banner container -->
       <div class="banner">
-        <h3>{{ userData.username }}</h3>
+        <h3>{{ localUserData.username }}</h3>
       </div>
       
       <!-- Content container -->
@@ -14,14 +14,14 @@
         <!-- Username -->
         <div class="section">
           <p style="display:inline-block; margin-right: 10px;">Username:</p>
-          <p>{{ updatedUserData.username || userData.username }}</p>
+          <p>{{ localUserData.username }}</p>
           <button @click="openPopup('username')">Update</button>
         </div>
 
         <!-- Email -->
         <div class="section">
           <p style="display:inline-block; margin-right: 10px;">Email:</p>
-          <p>{{ updatedUserData.email || userData.email }}</p>
+          <p>{{ localUserData.email }}</p>
           <button @click="openPopup('email')">Update</button>
         </div>
 
@@ -65,23 +65,23 @@ export default {
   props: {
     userData: {
       type: Object,
-      default: null
+      default: () => ({})
     }
   },
   data() {
     return {
+      localUserData: { ...this.userData }, // Create a local copy of userData
       showPopup: false,
       popupTitle: '',
       popupInput: '',
       passwordInput: '',
-      updatedUserData: {}, // Local data to hold updated user data
       isValidInput: false // Flag to track if input is valid
     };
   },
   computed: {
     maskedPassword() {
-      if (this.userData && this.userData.password) {
-        const password = this.userData.password;
+      if (this.localUserData && this.localUserData.password) {
+        const password = this.localUserData.password;
         const length = password.length;
         const masked = password.charAt(0) + '*'.repeat(length - 2) + password.charAt(length - 1);
         return masked;
@@ -90,6 +90,15 @@ export default {
     }
   },
   methods: {
+    async fetchUserData() {
+      try {
+        const response = await axios.get(`http://localhost:5235/User/${this.localUserData.id}`);
+        this.localUserData = response.data;
+        console.log('User data refreshed:', response.data);
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
+    },
     openPopup(field) {
       this.showPopup = true;
       this.popupInput = '';
@@ -127,15 +136,15 @@ export default {
     },
     async confirmPopup() {
       if (this.popupTitle === 'Change username') {
-        this.updatedUserData.username = this.popupInput;
+        this.localUserData.username = this.popupInput;
       } else if (this.popupTitle === 'Change email') {
-        this.updatedUserData.email = this.popupInput;
+        this.localUserData.email = this.popupInput;
       } else if (this.popupTitle === 'Change password') {
-        this.updatedUserData.password = this.passwordInput;
+        this.localUserData.password = this.passwordInput;
       }
 
       try {
-        const { id, username, email, password } = Object.assign({}, this.userData, this.updatedUserData);
+        const { id, username, email, password } = this.localUserData;
         const response = await axios.put(`http://localhost:5235/User/${id}`, {
           username,
           email,
@@ -145,7 +154,7 @@ export default {
         console.log('PUT request successful:', response.data);
         
         // Show success alert
-        alert('User updated successfully!');
+        //alert('User updated successfully!');
 
         // Auto close popup
         setTimeout(() => {
@@ -155,18 +164,27 @@ export default {
           this.isValidInput = false; // Reset validity check
         }, 100);
 
+        // Refresh user data after update
+        this.fetchUserData();
+
       } catch (error) {
         console.error('Failed to update:', error);
-      } finally {
-        // Reset updatedUserData
-        this.updatedUserData = {};
       }
     },
     deleteAccount() {
       // Placeholder for account deletion logic
     }
+  },
+  watch: {
+    // Watch for changes in the prop and update the local data accordingly
+    userData: {
+      handler(newValue) {
+        this.localUserData = { ...newValue };
+      },
+      deep: true
+    }
   }
-}
+};
 </script>
 
 <style scoped>
