@@ -204,7 +204,8 @@ export default {
       modalMessage: '',
       selectedSpot: null,
       totalPrice: 0,
-      userId: null,  // Initialize userId to null initially
+      userId: null,
+      newScore: null,
       selectedRating: 'any',
       selectedSize: 'any',
       selectedPrice: 'any',
@@ -507,11 +508,46 @@ export default {
           alert('An error occurred while submitting the comment.');
         });
     },
-    setUserRating(spot, rating) {
-        // Update userRating for the specific spot
-        this.$set(spot, 'userRating', parseInt(rating));
-        this.createNewRating(spot.id, parseInt(rating)); // Call createNewRating with the selected rating
+    handleScoreChange(event) {
+      this.newScore = event.target.value; // Update the new score
     },
+    async updateRating(ratingId, newScore, campingSpotId, userId) {
+      try {
+        // Ensure the newScore, campingSpotId, and userId are defined before making the request
+        if (newScore === undefined || newScore === null || campingSpotId === undefined || userId === undefined) {
+          throw new Error('Required fields are not defined');
+        }
+
+        // Make the PUT request with only ratingId in the URL and newScore in the body
+        const response = await axios.put(`http://localhost:5235/Rating/${ratingId}`, { 
+          score: newScore,
+          campingSpotId: campingSpotId,
+          userId: userId
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // Handle success
+        console.log('PUT request response:', response.data); // Debugging line
+        alert('Rating updated successfully!');
+        this.fetchRatings(); // Refresh ratings after update
+      } catch (error) {
+        console.error('Error updating rating:', error);
+        alert('An error occurred while updating the rating.');
+      }
+    },
+    setUserRating(spot, rating) {
+      const ratingId = this.ratings.find(rating => rating.campingSpotId === spot.id && rating.userId === this.userId)?.id;
+      const parsedRating = parseInt(rating);
+
+      if (ratingId) {
+        this.updateRating(ratingId, parsedRating, spot.id, this.userId); // Pass campingSpotId and userId
+      } else {
+        this.createNewRating(spot.id, parsedRating); // Call createNewRating if it's a new rating
+      }
+    }
     },
   watch: {
     selectedRating() {
