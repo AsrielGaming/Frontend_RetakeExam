@@ -403,6 +403,22 @@ export default {
       const userRating = this.ratings.find(rating => rating.campingSpotId === campingSpotId && rating.userId === this.userId);
       return userRating ? true : false;
     },
+    async createNewRating(campingSpotId, score) {
+      const ratingData = {
+        userId: this.userId,
+        campingSpotId: campingSpotId,
+        score: score
+      };
+
+      try {
+        await axios.post('http://localhost:5235/Rating', ratingData);
+        alert('Rating submitted successfully!');
+        this.fetchRatings(); // Refresh ratings after submission
+      } catch (error) {
+        console.error('Error submitting rating:', error);
+        alert('An error occurred while submitting the rating.');
+      }
+    },
     filterAll() {
       this.filteredCampingSpots = this.campingSpots;
     },
@@ -492,9 +508,10 @@ export default {
         });
     },
     setUserRating(spot, rating) {
-      // Update userRating for the specific spot
-      this.$set(spot, 'userRating', parseInt(rating));
-    }
+        // Update userRating for the specific spot
+        this.$set(spot, 'userRating', parseInt(rating));
+        this.createNewRating(spot.id, parseInt(rating)); // Call createNewRating with the selected rating
+    },
     },
   watch: {
     selectedRating() {
