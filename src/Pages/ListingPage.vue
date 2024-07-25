@@ -473,6 +473,11 @@ export default {
   width: 100%;
 }
 
+.listing-container-right-bottom{
+  overflow-y: scroll;
+  max-height: 200px;
+}
+
 /* Styling for individual listing container */
 .listing-spot-container {
   border: 1px solid #ccc;
