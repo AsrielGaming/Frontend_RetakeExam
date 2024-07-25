@@ -308,14 +308,16 @@ export default {
       const campingGroundId = campingGround.id;
 
       // Map selected amenities and camp types to their IDs or leave them empty if not selected
-      const amenities = this.newListing.dropdown3.map(amenityName => {
-        const foundAmenity = this.amenities.find(amenity => amenity.name === amenityName);
-        return foundAmenity ? foundAmenity.id : 0; // Use 0 if not found
+      const amenities = this.newListing.dropdown3.map(selectedAmenity => {
+        // `selectedAmenity` is a string
+        const foundAmenity = this.amenities.find(amenity => amenity.name === selectedAmenity);
+        return foundAmenity ? foundAmenity.id : 0;
       });
 
-      const campTypes = this.newListing.dropdown4.map(campTypeName => {
-        const foundCampType = this.campTypes.find(campType => campType.typeName === campTypeName);
-        return foundCampType ? foundCampType.id : 0; // Use 0 if not found
+      const campTypes = this.newListing.dropdown4.map(selectedCampType => {
+        // `selectedCampType` is an object
+        const foundCampType = this.campTypes.find(campType => campType.typeName === selectedCampType.typeName);
+        return foundCampType ? foundCampType.id : 0;
       });
 
       // Prepare data for POST request
