@@ -194,6 +194,7 @@ export default {
       selectedAmenities: [],
       campingGrounds: [],
       campingSpots: [],
+      bookings: [],
       filteredCampingSpots: [],
       users: [],
       campTypes: [],
@@ -226,6 +227,7 @@ export default {
           this.fetchCampTypes(),
           this.fetchRatings(),
           this.fetchComments(),
+          this.fetchBookings()
         ]);
 
         // Set userId based on userData.id if userData exists and has id
@@ -248,6 +250,14 @@ export default {
         this.amenitiesList = response.data;
       } catch (error) {
         console.error('Error fetching amenities:', error);
+      }
+    },
+    async fetchBookings() {
+      try {
+        const response = await axios.get('http://localhost:5235/Booking');
+        this.bookings = response.data; // Add a new data property 'bookings' to store the fetched data
+      } catch (error) {
+        console.error('Error fetching bookings:', error);
       }
     },
     async fetchCampingGrounds() {
