@@ -123,6 +123,23 @@
                 <p v-else>No comments available.</p>
               </div>
             </div>
+
+            <!-- Amenities section -->
+            <div class="listing-container-amenities">
+              <h4>Amenities</h4>
+              <ul>
+                <template v-if="spot.amenities.length > 0">
+                  <li v-for="amenityId in spot.amenities" :key="amenityId">
+                    <!-- Find the amenity name from the array using the ID -->
+                    {{ amenities.find(amenity => amenity.id === amenityId)?.name || 'undefined' }}
+                  </li>
+                </template>
+                <template v-else>
+                  <li>undefined</li>
+                </template>
+              </ul>
+            </div>
+
           </div>
         </div>
       </div>
@@ -433,6 +450,16 @@ export default {
   width: 48%;
   display: flex;
   flex-direction: column;
+}
+
+/* Add this style to the existing scoped styles */
+.listing-container-amenities {
+  width: 48%;
+  padding: 10px;
+}
+
+.listing-container-amenities h4 {
+  margin-left: 25px;
 }
 
 /* Styling for field */
