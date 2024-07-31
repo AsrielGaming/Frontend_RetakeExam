@@ -129,7 +129,7 @@ h1 {
   justify-content: center;
   align-items: center;
   width: 30%;
-  background-color: white; /* Solid white background */
+  background-color: #f9f9f9;
   padding: 20px;
   border-radius: 10px;
 }

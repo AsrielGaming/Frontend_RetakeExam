@@ -5,7 +5,7 @@
       
       <!-- Banner container -->
       <div class="banner">
-        <h3>{{ localUserData.username }}</h3>
+        <h3>Edit your account here {{ localUserData.username }}</h3>
       </div>
       
       <!-- Content container -->

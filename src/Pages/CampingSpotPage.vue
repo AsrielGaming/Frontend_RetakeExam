@@ -604,6 +604,7 @@ export default {
   border: 1px solid #ccc;
   padding: 10px;
   position: relative;
+  background-color: #f9f9f9;
 }
 
 .filter-controls {

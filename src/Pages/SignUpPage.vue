@@ -158,7 +158,7 @@ h1 {
   justify-content: center; /* Center content vertically */
   align-items: center; /* Center content horizontally */
   width: 30%; /* Adjust the width as necessary */
-  background-color: white;
+  background-color: #f9f9f9;
   padding: 20px;
   border-radius: 10px;
 }
