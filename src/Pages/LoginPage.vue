@@ -146,4 +146,22 @@ h1 {
   margin-bottom: 10px;
   justify-content: center; /* Center the items inside each section */
 }
+
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+p {
+  padding-right: 5px;
+}
 </style>
