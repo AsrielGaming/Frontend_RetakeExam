@@ -124,4 +124,18 @@ nav ul li:hover {
 nav ul li span {
   margin-right: 0;
 }
+
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #374B4A;
+  color: white;
+  border: 1px solid white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #45615F;
+}
 </style>
