@@ -102,7 +102,7 @@ export default {
 .Page {
   height: 89vh; /* Full viewport height */
   width: 99vw;  /* Full viewport width */
-  background-image: url('@/Images/LoginBackground.jpg'); /* Adjust the path as necessary */
+  background-image: url('@/Images/LoginBackground.jpg');
   background-size: cover;
   background-position: center;
   display: flex;

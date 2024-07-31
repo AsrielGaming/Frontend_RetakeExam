@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="Page">
     <h1>Sign up here</h1>
     
     <!-- Main container -->
@@ -10,34 +10,30 @@
         
         <!-- Username -->
         <div class="section">
-          <p style="display:inline-block; margin-right: 10px;">Username:</p>
+          <p>Username:</p>
           <input type="text" v-model="username" placeholder="Enter your username here" />
-          <!-- Information button with id -->
-          <span class="info-button" id="info-username" data-info="Username must be unique and contain only letters, numbers, or underscores." >?</span>
+          <span class="info-button" id="info-username" data-info="Username must be unique and contain only letters, numbers, or underscores.">?</span>
         </div>
 
         <!-- Email -->
         <div class="section">
-          <p style="display:inline-block; margin-right: 10px;">Email:</p>
+          <p>Email:</p>
           <input type="text" v-model="email" placeholder="Enter your email here" />
-          <!-- Information button with id -->
-          <span class="info-button" id="info-email" data-info="Email must be in the correct email address format." >?</span>
+          <span class="info-button" id="info-email" data-info="Email must be in the correct email address format.">?</span>
         </div>
 
         <!-- Password -->
         <div class="section">
-          <p style="display:inline-block; margin-right: 10px;">Password:</p>
+          <p>Password:</p>
           <input type="password" v-model="password" placeholder="Enter your password" />
-          <!-- Information button with id -->
-          <span class="info-button" id="info-password" data-info="Password must contain at least 1 capital letter, 1 number, and be 8 characters in length." >?</span>
+          <span class="info-button" id="info-password" data-info="Password must contain at least 1 capital letter, 1 number, and be 8 characters in length.">?</span>
         </div>
 
         <!-- Re Password -->
         <div class="section">
-          <p style="display:inline-block; margin-right: 10px;">Re Password:</p>
+          <p>Re Password:</p>
           <input type="password" v-model="rePassword" placeholder="Re-enter your password" />
-          <!-- Information button with id -->
-          <span class="info-button" id="info-repassword" data-info="Re-enter your password to confirm." >?</span>
+          <span class="info-button" id="info-repassword" data-info="Re-enter your password to confirm.">?</span>
         </div>
 
         <!-- Button -->
@@ -131,18 +127,45 @@ export default {
 </script>
 
 <style scoped>
+/* Css for full page */
+.Page {
+  height: 89vh;
+  width: 99vw;
+  background-image: url('@/Images/LoginBackground.jpg'); /* Make sure this path is correct */
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Center the H1 */
+h1 {
+  text-align: center;
+  color: white;
+  margin: 0;
+  padding: 10px;
+  border-radius: 10px;
+  width: 80%;
+  position: relative;
+}
+
 /* Styling for main container */
 .main-container {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center; /* Center content vertically */
+  align-items: center; /* Center content horizontally */
+  width: 30%; /* Adjust the width as necessary */
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
 }
 
 /* Styling for content */
 .content {
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin-top: 10px;
+  width: 100%;
 }
 
 /* Styling for section */
@@ -150,11 +173,13 @@ export default {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+  justify-content: center; /* Center items horizontally within each section */
 }
 
 /* Styling for textbox */
 input[type="text"], input[type="password"] {
-  width: 200px;
+  width: 100%; /* Full width of the section */
+  max-width: 300px; /* Ensure input fields don't become too wide */
 }
 
 /* Styling for information button */
@@ -172,17 +197,6 @@ input[type="text"], input[type="password"] {
   position: relative;
 }
 
-/* Styling for circle around information button */
-.info-button::before {
-  content: "";
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  position: absolute;
-  left: -5px;
-}
-
 /* Styling for information button hover effect */
 .info-button:hover::after {
   content: attr(data-info);
@@ -193,6 +207,26 @@ input[type="text"], input[type="password"] {
   border-radius: 5px;
   font-size: 12px;
   white-space: nowrap;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 25px; /* Adjust based on where you want the tooltip to appear */
 }
 
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+p {
+  padding-right: 5px;
+}
 </style>
