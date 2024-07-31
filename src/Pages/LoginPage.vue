@@ -29,9 +29,9 @@
     </div>
     
     <!-- Temporary button -->
-    <!--
+    
     <button @click="simulateLogin">Simulate Login</button>
-    -->
+    
     
   </div>
 </template>
