@@ -101,3 +101,27 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+nav {
+  background-color: #374B4A; /* Replace with your desired background color */
+  padding: 10px;
+  border-radius: 5px;
+  margin: 0px;
+}
+
+nav ul li {
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 3px;
+  color: white;
+}
+
+nav ul li:hover {
+  background-color: #45615F; /* Replace with your desired hover color */
+}
+
+nav ul li span {
+  margin-right: 0;
+}
+</style>

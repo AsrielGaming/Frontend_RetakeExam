@@ -233,8 +233,13 @@ export default {
     async fetchAmenities() {
       try {
         const response = await axios.get('http://localhost:5235/Amenity');
+        // Log the fetched amenities data
+        console.log('Fetched amenities:', response.data);
         // Extracting names from amenities objects
-        this.amenities = response.data.map(amenity => amenity.name);
+        this.amenities = response.data.map(amenity => {
+          //console.log('Processing amenity:', amenity);
+          return amenity.name;
+        });
       } catch (error) {
         console.error('Error fetching amenities:', error);
       }
@@ -281,6 +286,21 @@ export default {
 
       return campTypeNames.length > 0 ? campTypeNames.join(', ') : 'undefined';
     },
+    formatAmenities(amenityIds) {
+      console.log('Selected amenity IDs:', amenityIds);
+      console.log('Available amenities:', this.amenities);
+
+      // Find names based on the selected IDs
+      const amenityNames = amenityIds.map(id => {
+        const amenity = this.amenities.find(a => a.id === id);
+        console.log('Finding amenity ID:', id);
+        console.log('Found amenity:', amenity);
+        return amenity ? amenity.name : 'undefined';
+      }).filter(name => name !== 'undefined'); // Remove 'undefined' entries
+
+      console.log('Formatted amenity names:', amenityNames);
+      return amenityNames.length > 0 ? amenityNames.join(', ') : 'undefined';
+    },
     getCampingGroundName(campingGroundId) {
       // Get camping ground name based on ID
       const campingGround = this.campingGrounds.find(ground => ground.id === campingGroundId);
@@ -324,10 +344,14 @@ export default {
       }
       const campingGroundId = campingGround.id;
 
+      console.log('Selected amenities:', this.newListing.dropdown3);
+
       // Map selected amenities and camp types to their IDs or leave them empty if not selected
       const amenities = this.newListing.dropdown3.map(selectedAmenity => {
         // `selectedAmenity` is a string
         const foundAmenity = this.amenities.find(amenity => amenity.name === selectedAmenity);
+        console.log('Finding amenity:', selectedAmenity);
+        console.log('Found amenity ID:', foundAmenity ? foundAmenity.id : 'Not found');
         return foundAmenity ? foundAmenity.id : 0;
       });
 

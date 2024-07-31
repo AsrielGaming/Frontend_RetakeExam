@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="Page">
     <h1>Login here</h1>
     
     <!-- Main container -->
@@ -10,13 +10,13 @@
         
         <!-- Email -->
         <div class="section">
-          <p style="display:inline-block; margin-right: 10px;">Email:</p>
+          <p>Email:</p>
           <input type="text" v-model="email" placeholder="Enter your email here" />
         </div>
 
         <!-- Password -->
         <div class="section">
-          <p style="display:inline-block; margin-right: 10px;">Password:</p>
+          <p>Password:</p>
           <input type="password" v-model="password" placeholder="Enter your password here" />
         </div>
         
@@ -29,7 +29,9 @@
     </div>
     
     <!-- Temporary button -->
+    <!--
     <button @click="simulateLogin">Simulate Login</button>
+    -->
     
   </div>
 </template>
@@ -96,18 +98,45 @@ export default {
 </script>
 
 <style scoped>
+/* Css for full page */
+.Page {
+  height: 89vh; /* Full viewport height */
+  width: 99vw;  /* Full viewport width */
+  background-image: url('@/Images/LoginBackground.jpg'); /* Adjust the path as necessary */
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center;
+  justify-content: center; /* Center content vertically and horizontally */
+}
+
+/* Center the H1 */
+h1 {
+  text-align: center;
+  color: white;
+  margin: 0;
+  padding: 10px;
+  border-radius: 10px;
+  width: 80%; /* Adjust width to prevent overflow */
+  position: relative; /* Ensure the h1 is above the main container */
+}
+
 /* Styling for main container */
 .main-container {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
+  width: 30%;
+  background-color: white; /* Solid white background */
+  padding: 20px;
+  border-radius: 10px;
 }
 
 /* Styling for content */
 .content {
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin-top: 10px;
+  width: 100%; /* Ensure the content takes full width of the main container */
 }
 
 /* Styling for section */
@@ -115,5 +144,6 @@ export default {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+  justify-content: center; /* Center the items inside each section */
 }
 </style>
