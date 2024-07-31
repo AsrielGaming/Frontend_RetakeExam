@@ -591,7 +591,8 @@ export default {
   border: 1px solid #ccc;
   padding: 10px;
   margin-bottom: 10px;
-  background-color: #f9f9f9;
+  background-color: #008080;
+  color: white;
 }
 
 /* Styling for filter container */
@@ -643,6 +644,7 @@ export default {
   display: flex;
   border: 1px solid #ccc;
   padding: 10px;
+  background-color: #f9f9f9;
 }
 
 /* Styling for campingspots container */
