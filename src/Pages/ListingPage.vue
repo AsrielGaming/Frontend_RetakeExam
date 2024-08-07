@@ -62,12 +62,14 @@
             <div class="field">
               <label for="dropdown4">Camp Type: <span class="required-symbol">*</span></label>
               <multiselect v-model="newListing.dropdown4"
-                           :options="campTypes"
-                           placeholder="Select camp types"
-                           :multiple="true"
-                           :close-on-select="true"
-                           id="dropdown4"
-                           class="boxes">
+                :options="campTypes"
+                label="typeName"
+                track-by="typeName"
+                placeholder="Select camp types"
+                :multiple="true"
+                :close-on-select="true"
+                id="dropdown4"
+                class="boxes">
               </multiselect>
             </div>
 
