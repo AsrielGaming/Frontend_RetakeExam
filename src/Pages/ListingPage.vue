@@ -314,87 +314,99 @@ export default {
       return user ? user.username : 'Unknown User';
     },
     createListing() {
-      // Validate required fields
-      if (!this.newListing.name ||
-          !this.newListing.size ||
-          !this.newListing.description ||
-          !this.newListing.price ||
-          !this.newListing.dropdown2) {
-        this.errorMessage = 'Please fill in all required fields.';
-        this.successMessage = '';
-        return;
-      }
+    // Validate required fields
+    if (!this.newListing.name ||
+        !this.newListing.size ||
+        !this.newListing.description ||
+        !this.newListing.price ||
+        !this.newListing.dropdown2) {
+      this.errorMessage = 'Please fill in all required fields.';
+      this.successMessage = '';
+      return;
+    }
 
-      // Validate size and price
-      if (this.newListing.size <= 0) {
-        this.errorMessage = 'Size must be greater than 0.';
-        this.successMessage = '';
-        return;
-      }
-      if (this.newListing.price <= 0) {
-        this.errorMessage = 'Price must be greater than 0.';
-        this.successMessage = '';
-        return;
-      }
+    // Validate size and price
+    if (this.newListing.size <= 0) {
+      this.errorMessage = 'Size must be greater than 0.';
+      this.successMessage = '';
+      return;
+    }
+    if (this.newListing.price <= 0) {
+      this.errorMessage = 'Price must be greater than 0.';
+      this.successMessage = '';
+      return;
+    }
 
-      // Find selected camping ground object to get its ID
-      const campingGround = this.campingGrounds.find(ground => ground.name === this.newListing.dropdown2);
-      if (!campingGround) {
-        this.errorMessage = 'Invalid camping ground selected.';
+    // Find selected camping ground object to get its ID
+    const campingGround = this.campingGrounds.find(ground => ground.name === this.newListing.dropdown2);
+    if (!campingGround) {
+      this.errorMessage = 'Error while adding camping grounds.';
+      this.successMessage = '';
+      return;
+    }
+    const campingGroundId = campingGround.id;
+
+    const amenities = this.newListing.dropdown3.map(selectedAmenity => { 
+      const foundAmenity = this.amenities.find(amenity => { 
+        console.log(`Checking: ${amenity.name} against selected: ${selectedAmenity}`); 
+        return amenity.name === selectedAmenity; 
+      }); 
+      console.log(`Selected Amenity: ${selectedAmenity}, Found Amenity:`, foundAmenity); 
+      return foundAmenity ? foundAmenity.id : 0;
+    }); 
+
+    // Ensure no amenities have id of 0 (not found)
+    if (amenities.includes(0)) {
+      this.errorMessage = 'Error while adding amenities.';
+      this.successMessage = '';
+      return;
+    }
+
+    // Map selected camp types to their IDs
+    const campTypes = this.newListing.dropdown4.map(selectedCampType => {
+      const foundCampType = this.campTypes.find(campType => campType.typeName === selectedCampType.typeName);
+      return foundCampType ? foundCampType.id : 0;
+    });
+
+    // Ensure no camp types have id of 0 (not found)
+    if (campTypes.includes(0)) {
+      this.errorMessage = 'Error while adding camp types.';
+      this.successMessage = '';
+      return;
+    }
+
+    // Prepare data for POST request
+    const userId = this.userData ? this.userData.id : null;
+    const postData = {
+      spotName: this.newListing.name,
+      size: this.newListing.size,
+      description: this.newListing.description,
+      price: this.newListing.price,
+      isAvailable: this.newListing.isAvailable,
+      userId: userId,
+      campingGroundId: campingGroundId,
+      amenities: amenities,
+      campTypes: campTypes
+    };
+
+    // POST request to create new camping spot
+    axios.post('http://localhost:5235/CampingSpot', postData)
+      .then(response => {
+        console.log('New Camping Spot created:', response.data);
+        this.successMessage = 'New Camping Spot created successfully!';
+        this.errorMessage = '';
+        this.resetForm();
+      })
+      .catch(error => {
+        console.error('Error creating new Camping Spot:', error.response);
+        if (error.response && error.response.data && error.response.data.errors) {
+          this.errorMessage = 'Failed to create new Camping Spot. Please check the form and try again.';
+        } else {
+          this.errorMessage = 'Failed to create new Camping Spot. Please try again later.';
+        }
         this.successMessage = '';
-        return;
-      }
-      const campingGroundId = campingGround.id;
-
-      console.log('Selected amenities:', this.newListing.dropdown3);
-
-      // Map selected amenities and camp types to their IDs or leave them empty if not selected
-      const amenities = this.newListing.dropdown3.map(selectedAmenity => {
-        // `selectedAmenity` is a string
-        const foundAmenity = this.amenities.find(amenity => amenity.name === selectedAmenity);
-        console.log('Finding amenity:', selectedAmenity);
-        console.log('Found amenity ID:', foundAmenity ? foundAmenity.id : 'Not found');
-        return foundAmenity ? foundAmenity.id : 0;
       });
-
-      const campTypes = this.newListing.dropdown4.map(selectedCampType => {
-        // `selectedCampType` is an object
-        const foundCampType = this.campTypes.find(campType => campType.typeName === selectedCampType.typeName);
-        return foundCampType ? foundCampType.id : 0;
-      });
-
-      // Prepare data for POST request
-      const userId = this.userData ? this.userData.id : null; // Assuming userData.id exists
-      const postData = {
-        spotName: this.newListing.name,
-        size: this.newListing.size,
-        description: this.newListing.description,
-        price: this.newListing.price,
-        isAvailable: this.newListing.isAvailable,
-        userId: userId,
-        campingGroundId: campingGroundId,
-        amenities: amenities,
-        campTypes: campTypes
-      };
-
-      // POST request to create new camping spot
-      axios.post('http://localhost:5235/CampingSpot', postData)
-        .then(response => {
-          console.log('New Camping Spot created:', response.data);
-          this.successMessage = 'New Camping Spot created successfully!';
-          this.errorMessage = '';
-          this.resetForm();
-        })
-        .catch(error => {
-          console.error('Error creating new Camping Spot:', error.response);
-          if (error.response && error.response.data && error.response.data.errors) {
-            this.errorMessage = 'Failed to create new Camping Spot. Please check the form and try again.';
-          } else {
-            this.errorMessage = 'Failed to create new Camping Spot. Please try again later.';
-          }
-          this.successMessage = '';
-        });
-    },
+   },
     resetForm() {
       // Reset the form fields
       this.newListing = {
