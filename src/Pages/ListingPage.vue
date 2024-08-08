@@ -144,8 +144,8 @@
 
             <!-- New buttons container -->
             <div class="buttons">
-              <button>Edit CampingSpot</button>
-              <button>Delete CampingSpot</button>
+              <button @click="updateCampingSpot(spot.id)">Edit CampingSpot</button>
+              <button @click="deleteCampingSpot(spot.id)">Delete CampingSpot</button>
             </div>
 
           </div>
@@ -438,6 +438,34 @@ export default {
     },
     getComments(campingSpotId) {
       return this.comments.filter(comment => comment.campingSpotId === campingSpotId);
+    },
+    async deleteCampingSpot(campingSpotId) {
+      // Show confirmation dialog
+      const confirmation = confirm("Are you sure you want to delete your listing?");
+      
+      // If the user confirms, proceed with deletion
+      if (confirmation) {
+        try {
+          await axios.delete(`http://localhost:5235/CampingSpot/${campingSpotId}`);
+          
+          // Success alert
+          alert('Successfully deleted listing.');
+          
+          // Refresh the list of camping spots after deletion
+          this.fetchCampingSpots();
+        } catch (error) {
+          // Error alert
+          alert('Error while trying to delete listing.');
+          
+          console.error('Error deleting CampingSpot:', error.response);
+        }
+      } else {
+        // If the user cancels, do nothing
+        alert('Deletion cancelled.');
+      }
+    },
+    updateCampingSpot(campingSpotId) {
+      console.log('Update CampingSpot with ID:', campingSpotId);
     }
   }
 };
