@@ -142,6 +142,12 @@
               </ul>
             </div>
 
+            <!-- New buttons container -->
+            <div class="buttons">
+              <button>Edit CampingSpot</button>
+              <button>Delete CampingSpot</button>
+            </div>
+
           </div>
         </div>
       </div>
@@ -580,4 +586,28 @@ export default {
   color: red;
   margin-top: 10px;
 }
+
+/* Styling for the new buttons container */
+.buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Vertically center the buttons */
+  align-items: center;
+}
+
+/* Styling for the buttons within the container */
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
 </style>
