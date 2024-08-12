@@ -235,7 +235,7 @@
 
             <!-- New buttons container -->
             <div class="buttons">
-              <button @click="updateCampingSpot(spot.id)">Edit CampingSpot</button>
+              <button @click="openPopup(spot.id)">Edit CampingSpot</button>
               <button @click="deleteCampingSpot(spot.id)">Delete CampingSpot</button>
             </div>
 
@@ -558,14 +558,12 @@ export default {
     },
     updateCampingSpot(campingSpotId) {
       console.log('Update CampingSpot with ID:', campingSpotId);
-      this.showEditPopup = true; // Show the popup when edit is clicked
     },
     closePopup() {
       this.showEditPopup = false; // Close the popup
     },
-    confirmEdit() {
-      // Logic for confirming edit goes here...
-      this.showEditPopup = false; // Close the popup after confirming
+    openPopup() {
+      this.showEditPopup = true; // Opens the popup
     }
   }
 };
