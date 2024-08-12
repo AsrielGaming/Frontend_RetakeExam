@@ -3,6 +3,21 @@
     <!-- Main container -->
     <div class="main-container">
 
+      <!-- Overlay for darkening background -->
+      <div v-if="showEditPopup" class="overlay"></div>
+
+      <!-- Popup container -->
+      <div v-if="showEditPopup" class="popup-container">
+        <div class="popup-content">
+          <!-- Content you will fill -->
+          <p>Popup Content Here</p>
+        </div>
+        <div class="popup-buttons">
+          <button @click="confirmEdit">Confirm</button>
+          <button @click="closePopup">Cancel</button>
+        </div>
+      </div>
+
       <!-- Banner container -->
       <div class="banner">
         <h3>All Listings</h3>
@@ -190,6 +205,7 @@ export default {
       comments: [],
       users: [], // Added users array
       isLoading: true,
+      showEditPopup: false,
       successMessage: '',
       errorMessage: ''
     };
@@ -466,6 +482,14 @@ export default {
     },
     updateCampingSpot(campingSpotId) {
       console.log('Update CampingSpot with ID:', campingSpotId);
+      this.showEditPopup = true; // Show the popup when edit is clicked
+    },
+    closePopup() {
+      this.showEditPopup = false; // Close the popup
+    },
+    confirmEdit() {
+      // Logic for confirming edit goes here...
+      this.showEditPopup = false; // Close the popup after confirming
     }
   }
 };
@@ -635,6 +659,63 @@ button {
 }
 
 button:hover {
+  background-color: #45a049;
+}
+
+/* Overlay styling */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.popup-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 80%; /* Set width to 50% of the viewport */
+  height: 70%; /* Set height to 50% of the viewport */
+  background-color: white;
+  display: flex;
+  flex-direction: column; /* Stack content vertically */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transform: translate(-50%, -50%); /* Center the popup on the screen */
+}
+
+.popup-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%; /* Take full width of the popup container */
+  flex-grow: 1; /* Allow content to take up available vertical space */
+  box-sizing: border-box; /* Include padding in the width/height calculations */
+  overflow: auto; /* Add scrolling if content overflows */
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: center; /* Center buttons horizontally */
+  margin-top: 20px;
+  width: 100%; /* Take full width of the content */
+  box-sizing: border-box; /* Include padding/margin in width calculation */
+}
+
+.popup-buttons button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.popup-buttons button:hover {
   background-color: #45a049;
 }
 
