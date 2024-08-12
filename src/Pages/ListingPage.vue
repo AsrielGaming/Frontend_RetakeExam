@@ -9,12 +9,88 @@
       <!-- Popup container -->
       <div v-if="showEditPopup" class="popup-container">
         <div class="popup-content">
-          <!-- Content you will fill -->
-          <p>Popup Content Here</p>
-        </div>
-        <div class="popup-buttons">
-          <button @click="confirmEdit">Confirm</button>
-          <button @click="closePopup">Cancel</button>
+          <!-- Create Listing container -->
+          <div class="create-listing-container">
+            <!-- Top section -->
+            <div class="create-listing-container-top">
+              <!-- Left side -->
+              <div class="create-listing-container-left">
+                <!-- Name field -->
+                <div class="field">
+                  <label for="name">Name: <span class="required-symbol">*</span></label>
+                  <input type="text" id="name" v-model="newListing.name" class="boxes" required />
+                </div>
+                <!-- Size picker -->
+                <div class="field">
+                  <label for="size">Size: <span class="required-symbol">*</span></label>
+                  <input type="number" id="size" v-model.number="newListing.size" class="boxes" min="1" required />
+                </div>
+                <!-- Description field -->
+                <div class="field">
+                  <label for="description">Description: <span class="required-symbol">*</span></label>
+                  <input type="text" id="description" v-model="newListing.description" class="boxes" required />
+                </div>
+                <!-- Price picker -->
+                <div class="field">
+                  <label for="price">Price: <span class="required-symbol">*</span></label>
+                  <input type="number" id="price" v-model.number="newListing.price" class="boxes" min="1" required />
+                </div>
+              </div>
+
+              <!-- Right side -->
+              <div class="create-listing-container-right">
+                <!-- Dropdown boxes -->
+                <div class="field">
+                  <label for="dropdown2">Camping Ground: <span class="required-symbol">*</span></label>
+                  <select id="dropdown2" v-model="newListing.dropdown2" class="boxes" required>
+                    <option disabled value="">Please select one</option>
+                    <option v-for="ground in campingGrounds" :key="ground.id" :value="ground.name">{{ ground.name }}</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="dropdown3">Amenity:</label>
+                  <multiselect v-model="newListing.dropdown3"
+                              :options="amenities"
+                              placeholder="Select amenities"
+                              :multiple="true"
+                              :close-on-select="true"
+                              id="dropdown3"
+                              class="boxes">
+                  </multiselect>
+                </div>
+
+                <div class="field">
+                  <label for="dropdown4">Camp Type: <span class="required-symbol">*</span></label>
+                  <multiselect v-model="newListing.dropdown4"
+                    :options="campTypes"
+                    label="typeName"
+                    track-by="typeName"
+                    placeholder="Select camp types"
+                    :multiple="true"
+                    :close-on-select="true"
+                    id="dropdown4"
+                    class="boxes camp-types-multiselect">
+                  </multiselect>
+                </div>
+
+                <!-- Availability toggle -->
+                <div class="field checkbox-group">
+                  <label for="isAvailable">Is Available:</label>
+                  <input type="checkbox" id="isAvailable" v-model="newListing.isAvailable" style="align-self: flex-start;" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom section -->
+            <div class="create-listing-container-bottom">
+              <!-- Buttons -->
+              <button @click="updateCampingSpot" class="update-button">Update Listing</button>
+              <button @click="closePopup" class="cancel-button">Cancel</button>
+              <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+              <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -673,12 +749,13 @@ button:hover {
   z-index: 999;
 }
 
+/* Ensure the popup container is fixed in size and centered */
 .popup-container {
   position: fixed;
   top: 50%;
   left: 50%;
-  width: 80%; /* Set width to 50% of the viewport */
-  height: 70%; /* Set height to 50% of the viewport */
+  width: 80%; /* Adjust width as needed */
+  height: 56%; /* Adjust height as needed */
   background-color: white;
   display: flex;
   flex-direction: column; /* Stack content vertically */
@@ -686,37 +763,34 @@ button:hover {
   align-items: center;
   z-index: 1000;
   transform: translate(-50%, -50%); /* Center the popup on the screen */
+  overflow: visible; /* Allow overflow from the popup content */
+  box-sizing: border-box; /* Ensure padding and border are included in width/height */
 }
 
+/* Popup content should take full width and height but allow overflow */
 .popup-content {
   background-color: white;
   padding: 20px;
   border-radius: 8px;
-  width: 100%; /* Take full width of the popup container */
-  flex-grow: 1; /* Allow content to take up available vertical space */
-  box-sizing: border-box; /* Include padding in the width/height calculations */
-  overflow: auto; /* Add scrolling if content overflows */
+  width: 100%; /* Full width of the popup container */
+  height: 100%; /* Full height of the popup container */
+  box-sizing: border-box; /* Include padding in width/height calculations */
+  overflow: visible; /* Allow overflow beyond this container */
 }
 
-.popup-buttons {
-  display: flex;
-  justify-content: center; /* Center buttons horizontally */
-  margin-top: 20px;
-  width: 100%; /* Take full width of the content */
-  box-sizing: border-box; /* Include padding/margin in width calculation */
+/* Ensure multiselect can overflow */
+.multiselect {
+  overflow: visible; /* Allow multiselect to extend beyond its container */
 }
 
-.popup-buttons button {
-  padding: 10px 20px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
+/* Optional: styling for multiselect to visually indicate overflow */
+.multiselect-container {
+  overflow: visible; /* Ensure the container does not clip the multiselect */
+  position: relative; /* Ensure multiselect positioning is correct */
 }
 
-.popup-buttons button:hover {
-  background-color: #45a049;
+.update-button {
+  margin-right: 10px; /* Adjust the value as needed */
 }
 
 </style>
