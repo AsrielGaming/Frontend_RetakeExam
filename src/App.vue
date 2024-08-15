@@ -66,6 +66,7 @@ export default {
 
   computed: {
     filteredPages() {
+      // only show login and signup in navigation bar on login and signup page, else show all pages except login and signup
       if (this.activePage === 'Login' || this.activePage === 'Sign Up') {
         return ["Login", "Sign Up"];
       } else {
@@ -76,21 +77,25 @@ export default {
 
   methods: {
     changeActivePage(page) {
+      //change active page
       this.activePage = page;
     },
 
     getActiveStyling(page) {
+      // styling for the activepage
       return page === this.activePage ? "text-decoration: underline; font-weight:bold;" : "";
     },
     
     handleLoginSuccess(userData) {
       //console.log("Received userData:", userData);
+      // change active page to homepage and initialize userdata
       this.userData = userData;
       this.userName = userData.username;
       this.changeActivePage('Homepage');
     },
     
     handleSignupSuccess() {
+      //Change active page to login
       this.changeActivePage('Login');
     },
 
@@ -105,7 +110,7 @@ export default {
 
 <style scoped>
 nav {
-  background-color: #374B4A; /* Replace with your desired background color */
+  background-color: #374B4A;
   padding: 10px;
   border-radius: 5px;
   margin: 0px;
@@ -119,7 +124,7 @@ nav ul li {
 }
 
 nav ul li:hover {
-  background-color: #45615F; /* Replace with your desired hover color */
+  background-color: #45615F;
 }
 
 nav ul li span {
