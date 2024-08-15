@@ -29,9 +29,9 @@
     </div>
     
     <!-- Temporary button -->
-    
+    <!--
     <button @click="simulateLogin">Simulate Login</button>
-    
+    -->
     
   </div>
 </template>
@@ -49,6 +49,7 @@ export default {
   },
   methods: {
     changeActivePage(page) {
+      // change the active page
       this.$emit('change-active-page', page);
     },
     login() {
@@ -62,7 +63,7 @@ export default {
       axios.get('http://localhost:5235/User')
         .then(response => {
           //console.log("Users data:", response.data); // Log users data to console
-          const users = response.data; // Extract users data
+          const users = response.data; // put userdata in variable
               
           // Check if email and password belong to any user
           const userMatch = users.find(user => user.email === this.email && user.password === this.password);
@@ -75,22 +76,25 @@ export default {
               password: userMatch.password
             };
             this.$emit('login-success', userData); // Emit login success event
-            this.changeActivePage('Homepage'); // Change active page to Homepage
+            this.changeActivePage('Homepage'); // Brought straight to homepage
           } else {
             // Email or password is incorrect
             alert("Username or password is incorrect, please try again.");
           }
         })
         .catch(error => {
+          // error catching
           console.error("Error fetching users:", error);
           alert("An error occurred during login. Please try again.");
         });
     },
+    /*
     showInfo(event) {
       const infoText = event.target.getAttribute('data-info'); // Get info text from data-info attribute
       alert(infoText); // Show info alert
-    },
+    },*/
     simulateLogin() {
+      // emit event to app.vue
       this.$emit('login-simulated');
     }
   }
@@ -100,15 +104,15 @@ export default {
 <style scoped>
 /* Css for full page */
 .Page {
-  height: 89vh; /* Full viewport height */
-  width: 99vw;  /* Full viewport width */
+  height: 89vh; /* viewport height */
+  width: 99vw;  /* viewport width */
   background-image: url('@/Images/LoginBackground.jpg');
   background-size: cover;
   background-position: center;
   display: flex;
   flex-direction: column; /* Stack items vertically */
   align-items: center;
-  justify-content: center; /* Center content vertically and horizontally */
+  justify-content: center; /* Center content */
 }
 
 /* Center the H1 */
@@ -118,8 +122,8 @@ h1 {
   margin: 0;
   padding: 10px;
   border-radius: 10px;
-  width: 80%; /* Adjust width to prevent overflow */
-  position: relative; /* Ensure the h1 is above the main container */
+  width: 80%;
+  position: relative; /* makes it so h1 is above the main container */
 }
 
 /* Styling for main container */
@@ -136,15 +140,15 @@ h1 {
 
 /* Styling for content */
 .content {
-  width: 100%; /* Ensure the content takes full width of the main container */
+  width: 100%;
 }
 
-/* Styling for section */
+/* Styling for sections: mail, password and button */
 .section {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
-  justify-content: center; /* Center the items inside each section */
+  justify-content: center; /* Center the items */
 }
 
 button {
