@@ -97,17 +97,19 @@ export default {
       }
 
       try {
+        // search if a user with the same username or email already exists
         const existingUser = this.users.find(user => user.username === this.username || user.email === this.email);
         if (existingUser) {
           alert("A user with the same username or email already exists.");
           return;
         }
 
+        // Signup success
         const newUser = { username: this.username, email: this.email, password: this.password };
         await axios.post('http://localhost:5235/User', newUser); // Post new user data
         alert("User created successfully.");
         
-        // Emit event to notify signup success to the parent component
+        // Emit event to app.vue
         this.$emit('signup-success');
       } catch (error) {
         console.error("Error creating user:", error);
@@ -129,9 +131,9 @@ export default {
 <style scoped>
 /* Css for full page */
 .Page {
-  height: 89vh;
-  width: 99vw;
-  background-image: url('@/Images/LoginBackground.jpg'); /* Make sure this path is correct */
+  height: 89vh; /* view height */
+  width: 99vw; /* view width */
+  background-image: url('@/Images/LoginBackground.jpg');
   background-size: cover;
   background-position: center;
   display: flex;
@@ -155,9 +157,9 @@ h1 {
 .main-container {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center content vertically */
-  align-items: center; /* Center content horizontally */
-  width: 30%; /* Adjust the width as necessary */
+  justify-content: center;
+  align-items: center;
+  width: 30%;
   background-color: #f9f9f9;
   padding: 20px;
   border-radius: 10px;
@@ -173,13 +175,13 @@ h1 {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
-  justify-content: center; /* Center items horizontally within each section */
+  justify-content: center;
 }
 
 /* Styling for textbox */
 input[type="text"], input[type="password"] {
-  width: 100%; /* Full width of the section */
-  max-width: 300px; /* Ensure input fields don't become too wide */
+  width: 100%;
+  max-width: 300px;
 }
 
 /* Styling for information button */
@@ -209,7 +211,7 @@ input[type="text"], input[type="password"] {
   white-space: nowrap;
   left: 50%;
   transform: translateX(-50%);
-  top: 25px; /* Adjust based on where you want the tooltip to appear */
+  top: 25px;
 }
 
 button {
