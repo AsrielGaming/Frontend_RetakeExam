@@ -2,6 +2,7 @@
   <div id="app">
     <!-- Navigation -->
     <nav style="display: flex; margin-bottom: 10px;">
+      <!-- Unordered list of pages, when clicked active page becomes page clicked -->
       <ul style="display: flex; list-style-type: none; padding: 0; margin: 0;">
         <li v-for="(page, index) in filteredPages" :key="index" @click="changeActivePage(page)" :style="getActiveStyling(page)">
           <span style="margin-right: 10px;">{{ page }}</span>
