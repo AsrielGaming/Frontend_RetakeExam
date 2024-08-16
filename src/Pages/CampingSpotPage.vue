@@ -97,10 +97,12 @@
                   <label><strong>End Date:</strong></label>
                   <input type="date" v-model="spot.endDate" @change="validateDates(spot)">
                 </div>
+                <!-- error catching -->
                 <div v-if="spot.dateError" class="error-message">
                   <p>{{ spot.dateError }}</p>
                 </div>
                 <div class="book-button-container">
+                  <!-- disabled if empty or incorrect dates -->
                   <button :disabled="!spot.startingDate || !spot.endDate || spot.dateError" @click="calculateAndShowTotalPrice(spot)">Book</button>
                 </div>
               </div>
@@ -118,15 +120,19 @@
 
               <!-- New section for comments or additional amenities -->
               <div class="comment-amenity-section">
+                <!-- Get rating if not then undefined = default value -->
                 <p>Average Rating: {{ getRating(spot.id) !== undefined ? getRating(spot.id) : 'undefined' }}</p>
                 
+                <!-- check if the current user has already rated it, if not this isn't visible -->
                 <div v-if="AlreadyRated(spot.id)">
                   <p>Your rating: {{ getUserRating(spot.id) }}</p>
                 </div>
                 
+                <!-- int picker to create a new rating -->
                 <div class="rating-picker">
                   <label>Make a new rating:</label>
                   <select v-model="spot.userRating" @change="setUserRating(spot, spot.userRating)">
+                    <!-- disabled because it's only needed to show the user what to do -->
                     <option value="" disabled>Select rating</option>
                     <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
                   </select>
@@ -154,6 +160,7 @@
             </div>
           </div>
           <div v-else>
+            <!-- shows when you apply a filter but there are no spots meeting the requirement -->
             <p>No available camping spots.</p>
           </div>
         </div>
@@ -237,6 +244,7 @@ export default {
           console.error('User data or user id not available.');
         }
 
+        // initialize filtered campingspots
         this.filteredCampingSpots = this.campingSpots;
       } catch (error) {
         console.error('Error initializing data:', error);
@@ -255,7 +263,7 @@ export default {
     async fetchBookings() {
       try {
         const response = await axios.get('http://localhost:5235/Booking');
-        this.bookings = response.data; // Add a new data property 'bookings' to store the fetched data
+        this.bookings = response.data;
       } catch (error) {
         console.error('Error fetching bookings:', error);
       }
@@ -313,56 +321,88 @@ export default {
       }
     },
     getCampTypeNames(campTypeIds) {
+      // Create a deep copy of campTypeIds to avoid mutating the original array
       const ids = JSON.parse(JSON.stringify(campTypeIds));
 
+      // Check if the ids array is empty
       if (!ids || ids.length === 0) {
         return 'No camp types';
       }
 
+      // Map each id to its corresponding camp type name
       const names = ids.map(id => {
+        // Find the camp type object that matches the current id
         const campType = this.campTypes.find(type => type.id === id);
+        // Return the type name if found, otherwise return 'Undefined'
         return campType ? campType.typeName : 'Undefined';
       });
 
+      // Join all the camp type names into a single string, separated by commas, else undefined
       return names.length > 0 ? names.join(', ') : 'Undefined';
     },
+
     getAmenityName(amenityId) {
+      // Find the amenity object that matches the provided amenityId
       const amenity = this.amenitiesList.find(amenity => amenity.id === amenityId);
+      // Return the name of the amenity if found, otherwise return 'Undefined'
       return amenity ? amenity.name : 'Undefined';
     },
+
     getAmenityIdByName(name) {
+      // Find the amenity object that matches the provided name
       const amenity = this.amenitiesList.find(a => a.name === name);
+      // Return the id of the amenity if found, otherwise return null
       return amenity ? amenity.id : null;
     },
+
     getCampingGroundName(campingGroundId) {
+      // Find the camping ground object that matches the provided campingGroundId
       const ground = this.campingGrounds.find(g => g.id === campingGroundId);
+      // Return the name of the camping ground if found, otherwise return 'Undefined'
       return ground ? ground.name : 'Undefined';
     },
+
     getUserName(userId) {
+      // Find the user object that matches the provided userId
       const user = this.users.find(u => u.id === userId);
+      // Return the username if found, otherwise return 'Undefined'
       return user ? user.username : 'Undefined';
     },
+
     getCommenterUsername(userId) {
-      // Get username based on userId
+      // Find the user object that matches the provided userId
       const user = this.users.find(user => user.id === userId);
+      // Return the username if found, otherwise return 'Unknown User'
       return user ? user.username : 'Unknown User';
     },
+
     validateDates(spot) {
+      // Check if both startingDate and endDate are defined
       if (spot.startingDate && spot.endDate) {
+        // Convert the dates to Date objects and compare them
         if (new Date(spot.startingDate) > new Date(spot.endDate)) {
+          // Alert the user if the end date is earlier than the start date
           alert('End date must be the same or later than start date');
-          spot.endDate = ''; // Clear the end date
+          spot.endDate = '';
         }
       }
     },
+
     calculateAndShowTotalPrice(spot) {
+      // Convert startingDate and endDate to Date objects
       const startDate = new Date(spot.startingDate);
       const endDate = new Date(spot.endDate);
+      // Calculate the difference in time between the two dates
       const timeDiff = endDate.getTime() - startDate.getTime();
-      const dayDiff = timeDiff / (1000 * 3600 * 24) + 1; // Including the start date
+      // Convert the time difference to days, including the start date
+      const dayDiff = timeDiff / (1000 * 3600 * 24) + 1;
+      // Calculate the total price by multiplying the price per day by the number of days
       const totalPrice = spot.price * dayDiff;
+      // Put the modal message in a variable
       this.modalMessage = `The total price will be: ${totalPrice} €. Are you sure you want to book this campingspot?`;
+      // Display the modal to the user
       this.showModal = true;
+      // Store the selected spot and total price for further processing
       this.selectedSpot = spot;
       this.totalPrice = totalPrice;
     },
@@ -370,10 +410,12 @@ export default {
       this.showModal = false;
     },
     async handleProceed() {
+      // Check if a spot has been selected before proceeding else exit
       if (!this.selectedSpot) {
         return;
       }
 
+      // Prepare the booking data to be sent in the POST request
       const bookingData = {
         userId: this.userId,
         spotId: this.selectedSpot.id,
@@ -383,38 +425,56 @@ export default {
       };
 
       try {
+        // Create new booking
         await axios.post('http://localhost:5235/Booking', bookingData);
+        // success
         alert('Booking successful!');
         this.showModal = false;
       } catch (error) {
+        // error catching
         console.error('Error creating booking:', error);
         alert('An error occurred while creating the booking.');
       }
     },
+
     getRating(campingSpotId) {
-      // Get all ratings for a camping spot and compute average
+      // Get all ratings for a specific camping spot else return undefined
       const ratings = this.ratings.filter(rating => rating.campingSpotId === campingSpotId);
       if (ratings.length === 0) {
-        return undefined; // No ratings
+        return undefined;
       }
+
+      // Calculate the average
       const sum = ratings.reduce((total, rating) => total + rating.score, 0);
       const average = sum / ratings.length;
-      return average.toFixed(1); // Display average with 1 decimal place
-      },
-      getUserRating(campingSpotId) {
-      // Get the specific rating made by the current user for the given camping spot
+
+      // Return the average rating rounded to 1 decimal place
+      return average.toFixed(1);
+    },
+
+    getUserRating(campingSpotId) {
+      // Find the rating made by the current user for the given camping spot
       const userRating = this.ratings.find(rating => rating.campingSpotId === campingSpotId && rating.userId === this.userId);
+
+      // Return the user's rating score else return null
       return userRating ? userRating.score : null;
     },
+
     getComments(campingSpotId) {
+      // Filter and return all comments for the given camping spot
       return this.comments.filter(comment => comment.campingSpotId === campingSpotId);
     },
+
     AlreadyRated(campingSpotId) {
-      // Find if there's a rating made by the current user for the given camping spot
+      // Check if the current user has already rated the given camping spot
       const userRating = this.ratings.find(rating => rating.campingSpotId === campingSpotId && rating.userId === this.userId);
+
+      // Return true if a rating is found, otherwise return false
       return userRating ? true : false;
     },
+
     async createNewRating(campingSpotId, score) {
+      // Prepare the rating data to be sent in the POST request
       const ratingData = {
         userId: this.userId,
         campingSpotId: campingSpotId,
@@ -422,10 +482,13 @@ export default {
       };
 
       try {
+        // Create new rating
         await axios.post('http://localhost:5235/Rating', ratingData);
+        // success
         alert('Rating submitted successfully!');
-        this.fetchRatings(); // Refresh ratings after submission
+        this.fetchRatings(); // refresh
       } catch (error) {
+        // error catching
         console.error('Error submitting rating:', error);
         alert('An error occurred while submitting the rating.');
       }
@@ -489,73 +552,89 @@ export default {
       }
     },
     isEmpty(spotId) {
+      // Check if the comment for the given spotId is empty or undefined
       if (!this.newComment[spotId]) {
         alert('Comment cannot be empty.');
         return true;
       }
       return false;
     },
+
     submitComment(spotId) {
+      // Check if the comment is not empty before proceeding to submit it
       if (!this.isEmpty(spotId)) {
         this.postComment(spotId);
       }
     },
+
     postComment(spotId) {
+      // Prepare the comment data to be sent in the POST request
       const commentData = {
         text: this.newComment[spotId],
         campingSpotId: spotId,
         userId: this.userId,
       };
-      // Call API to save the comment
-      axios.post('http://localhost:5235/Comment', commentData)
-        .then(() => {
-          alert('Comment submitted successfully!');
-          this.fetchComments(); // Refresh comments after submission
-          this.newComment[spotId] = ''; // Clear the comment input for the specific spot
-        })
-        .catch(error => {
-          console.error('Error submitting comment:', error);
-          alert('An error occurred while submitting the comment.');
-        });
+
+    // Create new comment
+    axios.post('http://localhost:5235/Comment', commentData)
+      .then(() => {
+        // success
+        alert('Comment submitted successfully!');
+        this.fetchComments(); // Refresh
+        this.newComment[spotId] = ''; // Clear the comment input for the specific spot
+      })
+      .catch(error => {
+        // Error handling
+        console.error('Error submitting comment:', error);
+        alert('An error occurred while submitting the comment.');
+      });
     },
+
     handleScoreChange(event) {
-      this.newScore = event.target.value; // Update the new score
+      // Update the new score based on the event
+      this.newScore = event.target.value;
     },
+
     async updateRating(ratingId, newScore, campingSpotId, userId) {
       try {
-        // Ensure the newScore, campingSpotId, and userId are defined before making the request
+        // Ensure required fields are defined
         if (newScore === undefined || newScore === null || campingSpotId === undefined || userId === undefined) {
           throw new Error('Required fields are not defined');
         }
 
-        // Make the PUT request with only ratingId in the URL and newScore in the body
+        // Make a PUT request to update the rating
         const response = await axios.put(`http://localhost:5235/Rating/${ratingId}`, { 
           score: newScore,
           campingSpotId: campingSpotId,
           userId: userId
         }, {
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json' // Specify the content type as JSON
           }
         });
 
-        // Handle success
-        console.log('PUT request response:', response.data); // Debugging line
+        // Handle successful response
+        console.log('PUT request response:', response.data);
         alert('Rating updated successfully!');
-        this.fetchRatings(); // Refresh ratings after update
+        this.fetchRatings(); // Refresh
       } catch (error) {
+        // Error handling
         console.error('Error updating rating:', error);
         alert('An error occurred while updating the rating.');
       }
     },
+
     setUserRating(spot, rating) {
+      // Find the rating ID for the current user and the specific camping spot, if it exists
       const ratingId = this.ratings.find(rating => rating.campingSpotId === spot.id && rating.userId === this.userId)?.id;
-      const parsedRating = parseInt(rating);
+      const parsedRating = parseInt(rating); // Parse the rating to an integer
 
       if (ratingId) {
-        this.updateRating(ratingId, parsedRating, spot.id, this.userId); // Pass campingSpotId and userId
+        // If a rating ID is found, update the existing rating
+        this.updateRating(ratingId, parsedRating, spot.id, this.userId);
       } else {
-        this.createNewRating(spot.id, parsedRating); // Call createNewRating if it's a new rating
+        // If no rating ID is found, create a new rating
+        this.createNewRating(spot.id, parsedRating);
       }
     }
     },
@@ -576,6 +655,7 @@ export default {
 };
 </script>
 
+<!-- This will make the default multiselect work -->
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style scoped>
@@ -664,12 +744,12 @@ export default {
 
 /* Styling for spot details */
 .spot-details {
-  flex: 25%; /* 25% width */
+  flex: 25%;
 }
 
 /* Styling for booking section */
 .booking-section {
-  flex: 12.5%; /* 12.5% width */
+  flex: 12.5%;
   padding: 10px;
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
@@ -707,15 +787,15 @@ button:hover {
 
 /* Styling for amenities section */
 .amenities-section {
-  flex: 12.5%; /* 12.5% width */
+  flex: 12.5%;
   padding-left: 10px;
   border-right: 1px solid #ccc;
 }
 
 /* Styling for comment-amenity-section */
 .comment-amenity-section {
-  flex: 25%; /* 25% width */
-  padding-left: 10px; /* Adjust padding as needed */
+  flex: 25%;
+  padding-left: 10px;
 }
 
 .comment-container{
@@ -756,13 +836,13 @@ button:hover {
 /* Styling for rating system */
 .rating-system {
   display: flex;
-  align-items: center; /* Align items vertically center */
+  align-items: center;
 }
 
 .rating-label {
-  margin-right: 10px; /* Space between label and stars */
+  margin-right: 10px;
   font-weight: bold;
-  font-size: 1em; /* Ensure label font size matches stars */
+  font-size: 1em;
 }
 
 /* Styling for rating picker */
@@ -787,8 +867,8 @@ button:hover {
 .comment-input-section textarea {
   width: 100%;
   max-width: 95%;
-  height: 100px; /* Set initial height */
-  max-height: 200px; /* Set maximum height */
+  height: 100px;
+  max-height: 200px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
