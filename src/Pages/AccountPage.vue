@@ -43,13 +43,22 @@
     <!-- Popup container -->
     <div v-if="showPopup" class="popup-container">
       <div class="popup">
+        <!-- Dynamic title based on popupTitle -->
         <h3>{{ popupTitle }}</h3>
+        <!-- Input field for everything except changing password -->
         <input v-if="popupTitle !== 'Change password'" type="text" v-model="popupInput" placeholder="Enter new value" @input="validateField" />
-        <input v-else type="text" v-model="passwordInput" placeholder="Enter new password" @input="validateField" />
+        <!-- Input field for changing password -->
+        <input v-else type="text" v-model="passwordInput" placeholder="Enter new value" @input="validateField" />
+        <!-- Email validation message, shown if email format is invalid -->
         <p v-if="popupTitle === 'Change email' && !isValidEmail(popupInput)" class="validation-message">Invalid email format</p>
+        <!-- Password validation message, shown if password is invalid -->
         <p v-if="popupTitle === 'Change password' && !isValidPassword(passwordInput)" class="validation-message">Password must contain at least one uppercase letter, one number, and be at least 8 characters long</p>
+        
+        <!-- Popup buttons -->
         <div class="popup-buttons">
+          <!-- Confirm button, disabled if input is invalid -->
           <button @click="confirmPopup" :disabled="!isValidInput">Confirm</button>
+          <!-- Cancel button to close the popup -->
           <button @click="cancelPopup">Cancel</button>
         </div>
       </div>
@@ -80,12 +89,17 @@ export default {
   },
   computed: {
     maskedPassword() {
+      // Check if localUserData and its password property exist
       if (this.localUserData && this.localUserData.password) {
+        // Retrieve the password from localUserData
         const password = this.localUserData.password;
+        // Get the length of the password
         const length = password.length;
+        // Mask the password, keeping the first and last characters visible
         const masked = password.charAt(0) + '*'.repeat(length - 2) + password.charAt(length - 1);
         return masked;
       }
+      // Return empty string if it doesn't exist
       return '';
     }
   },
@@ -101,8 +115,10 @@ export default {
     },
     openPopup(field) {
       this.showPopup = true;
+      // Clear inputs
       this.popupInput = '';
-      this.passwordInput = ''; // Clear password input when opening popup
+      this.passwordInput = '';
+      // Setting the popup titles
       if (field === 'username') {
         this.popupTitle = 'Change username';
       } else if (field === 'email') {
@@ -113,6 +129,7 @@ export default {
     },
     cancelPopup() {
       this.showPopup = false;
+      // Clear inputs
       this.popupInput = '';
       this.passwordInput = '';
       this.isValidInput = false; // Reset validity check
@@ -143,6 +160,7 @@ export default {
         this.localUserData.password = this.passwordInput;
       }
 
+      // Put method to update  user
       try {
         const { id, username, email, password } = this.localUserData;
         const response = await axios.put(`http://localhost:5235/User/${id}`, {
