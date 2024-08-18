@@ -63,14 +63,14 @@
                 <div class="field">
                   <label for="dropdown4">Camp Type: <span class="required-symbol">*</span></label>
                   <multiselect v-model="newListing.dropdown4"
-                    :options="campTypes"
-                    label="typeName"
-                    track-by="typeName"
-                    placeholder="Select camp types"
-                    :multiple="true"
-                    :close-on-select="true"
-                    id="dropdown4"
-                    class="boxes camp-types-multiselect">
+                              :options="campTypes"
+                              label="typeName"
+                              track-by="typeName"
+                              placeholder="Select camp types"
+                              :multiple="true"
+                              :close-on-select="true"
+                              id="dropdown4"
+                              class="boxes camp-types-multiselect">
                   </multiselect>
                 </div>
 
@@ -153,14 +153,14 @@
             <div class="field">
               <label for="dropdown4">Camp Type: <span class="required-symbol">*</span></label>
               <multiselect v-model="newListing.dropdown4"
-                :options="campTypes"
-                label="typeName"
-                track-by="typeName"
-                placeholder="Select camp types"
-                :multiple="true"
-                :close-on-select="true"
-                id="dropdown4"
-                class="boxes">
+                          :options="campTypes"
+                          label="typeName"
+                          track-by="typeName"
+                          placeholder="Select camp types"
+                          :multiple="true"
+                          :close-on-select="true"
+                          id="dropdown4"
+                          class="boxes">
               </multiselect>
             </div>
 
@@ -693,7 +693,7 @@ export default {
 
 /* Styling for listing information */
 .listing-info {
-  width: 100%; /* Adjust as per your layout */
+  width: 100%;
 }
 
 /* Styling for required symbol */
@@ -717,7 +717,7 @@ export default {
 .buttons {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Vertically center the buttons */
+  justify-content: center;
   align-items: center;
 }
 
@@ -752,8 +752,8 @@ button:hover {
   position: fixed;
   top: 50%;
   left: 50%;
-  width: 80%; /* Adjust width as needed */
-  height: 56%; /* Adjust height as needed */
+  width: 80%;
+  height: 56%;
   background-color: white;
   display: flex;
   flex-direction: column; /* Stack content vertically */
@@ -762,7 +762,7 @@ button:hover {
   z-index: 1000;
   transform: translate(-50%, -50%); /* Center the popup on the screen */
   overflow: visible; /* Allow overflow from the popup content */
-  box-sizing: border-box; /* Ensure padding and border are included in width/height */
+  box-sizing: border-box;
 }
 
 /* Popup content should take full width and height but allow overflow */
@@ -770,9 +770,9 @@ button:hover {
   background-color: white;
   padding: 20px;
   border-radius: 8px;
-  width: 100%; /* Full width of the popup container */
-  height: 100%; /* Full height of the popup container */
-  box-sizing: border-box; /* Include padding in width/height calculations */
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
   overflow: visible; /* Allow overflow beyond this container */
 }
 
@@ -788,7 +788,7 @@ button:hover {
 }
 
 .update-button {
-  margin-right: 10px; /* Adjust the value as needed */
+  margin-right: 10px;
 }
 
 </style>
